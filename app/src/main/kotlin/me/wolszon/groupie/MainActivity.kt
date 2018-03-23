@@ -1,4 +1,4 @@
-package wolszon.me.groupie
+package me.wolszon.groupie
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
