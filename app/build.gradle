@@ -43,13 +43,15 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$versions.kotlin"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$versions.kotlin"
     implementation "com.android.support:appcompat-v7:$versions.supportLibrary"
     implementation "com.android.support:recyclerview-v7:$versions.supportLibrary"
     implementation "com.android.support.constraint:constraint-layout:$versions.constraintLayout"
 
     // Dagger 2
     implementation "com.google.dagger:dagger:$versions.dagger2"
+    implementation 'com.google.android.gms:play-services-maps:12.0.0'
+    implementation 'com.android.support:appcompat-v7:27.1.0'
     kapt "com.google.dagger:dagger-compiler:$versions.dagger2"
     kapt "com.google.dagger:dagger-android-processor:$versions.dagger2"
     implementation "com.google.dagger:dagger-android:$versions.dagger2"

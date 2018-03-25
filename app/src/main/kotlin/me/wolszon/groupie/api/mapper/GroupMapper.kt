@@ -7,6 +7,6 @@ import me.wolszon.groupie.api.models.dataclass.Member
 class GroupMapper {
     companion object : Mapper<GroupResponse, Group> {
         override fun map(value: GroupResponse): Group =
-            Group(value.members.map { Member(it.name) })
+            Group(value.members.map { Member(it.name, it.coords.lat, it.coords.lng) })
     }
 }
