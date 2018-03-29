@@ -1,6 +1,7 @@
 package me.wolszon.groupie.ui.groupgeneral
 
 import android.os.Bundle
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -40,6 +41,10 @@ class GroupGeneralActivity : BaseActivity(), GroupGeneralView, OnMapReadyCallbac
 
     override fun showMembersMarkers(members: List<Member>) {
         map.clear()
+
+        map.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(LatLng(members[0].lat, members[0].lng), 15f)
+        )
 
         members.forEach {
             val marker = MarkerOptions()

@@ -8,7 +8,8 @@ import dagger.android.support.DaggerAppCompatActivity
 abstract class BaseActivity : DaggerAppCompatActivity() {
     fun showErrorDialog(e : Throwable) {
         AlertDialog.Builder(this)
-                .setMessage("An error has occured.")
+                .setTitle("An error has occured.")
+                .setMessage(e.message)
                 .setPositiveButton(android.R.string.ok, null)
                 .create()
                 .show()

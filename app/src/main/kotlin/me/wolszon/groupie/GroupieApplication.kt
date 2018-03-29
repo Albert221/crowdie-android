@@ -10,6 +10,6 @@ class GroupieApplication : DaggerApplication() {
     }
 
     companion object {
-        const val API_BASE_URL = "http://dupa"
+        const val API_BASE_URL = "http://192.168.1.30:8080"
     }
 }

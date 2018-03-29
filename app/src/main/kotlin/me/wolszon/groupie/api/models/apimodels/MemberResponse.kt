@@ -9,6 +9,6 @@ data class MemberResponse (
     var name: String,
     @Json(name = "role")
     var role: Int,
-    @Json(name = "coords")
-    var coords: CoordsResponse
+    @Json(name = "coordsBits")
+    var coordsBits: List<CoordsBitResponse>
 )

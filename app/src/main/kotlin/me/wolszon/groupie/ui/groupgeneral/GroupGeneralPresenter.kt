@@ -6,7 +6,7 @@ import me.wolszon.groupie.base.Schedulers
 
 class GroupGeneralPresenter(val schedulers : Schedulers, val groupApi : GroupApi)
     : BasePresenter<GroupGeneralView>() {
-    val id = ""
+    val id = "d175a80a-399a-4c89-b05a-1b8e2decab57"
 
     fun loadMembers() {
         compositeObservable.add(
