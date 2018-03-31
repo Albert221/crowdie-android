@@ -12,9 +12,14 @@ class MembersListAdapter @Inject() constructor() : RecyclerView.Adapter<MembersL
     val members = arrayListOf<Member>()
 
     lateinit var onMemberClickListener: (String) -> Unit
+    lateinit var onMemberPromoteListener: (String) -> Unit
+    lateinit var onMemberSuppressListener: (String) -> Unit
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MembersListViewHolder =
-            MembersListViewHolder(parent.inflate(R.layout.members_list_item), onMemberClickListener)
+            MembersListViewHolder(parent.inflate(R.layout.members_list_item),
+                                  onMemberClickListener,
+                                  onMemberPromoteListener,
+                                  onMemberSuppressListener)
 
     override fun onBindViewHolder(holder: MembersListViewHolder?, position: Int) {
         holder?.apply {
@@ -27,6 +32,14 @@ class MembersListAdapter @Inject() constructor() : RecyclerView.Adapter<MembersL
             clear()
             addAll(members)
             notifyDataSetChanged()
+        }
+    }
+
+    fun updateMember(member: Member) {
+        members.apply {
+            val index = indexOfFirst { it.id == member.id }
+            set(index, member)
+            notifyItemChanged(index)
         }
     }
 

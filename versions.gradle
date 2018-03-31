@@ -5,6 +5,7 @@ ext {
             kotlin            : '1.2.10',
             supportLibrary    : '27.0.2',
             constraintLayout  : '1.0.2',
+            swipeLayout       : '1.2.0',
             dagger2           : '2.13',
             javax_annotations : '10.0-b28',
             retrofit          : '2.3.0',

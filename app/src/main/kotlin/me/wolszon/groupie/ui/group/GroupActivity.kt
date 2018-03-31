@@ -1,6 +1,7 @@
 package me.wolszon.groupie.ui.group
 
 import android.os.Bundle
+import android.support.v7.widget.DividerItemDecoration
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -33,8 +34,11 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
         membersListAdapter.onMemberClickListener = this::focusMemberOnMap
+        membersListAdapter.onMemberPromoteListener = presenter::promoteMember
+        membersListAdapter.onMemberSuppressListener = presenter::suppressMember
         membersList.apply {
             prepare()
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
 
             adapter = membersListAdapter
         }
@@ -53,7 +57,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
         presenter.loadMembers()
     }
 
-    override fun showMembers(members: List<Member>, focus: Boolean) {
+    override fun showMembers(members: List<Member>, imperceptibly: Boolean) {
         membersListAdapter.showMembers(members)
 
         map.apply {
@@ -64,7 +68,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
             members.forEach {
                 val markerOptions = MarkerOptions()
                         .title(it.name)
-                        .position(LatLng(it.lat, it.lng))
+                        .position(LatLng(it.lat.toDouble(), it.lng.toDouble()))
 
                 addMarker(markerOptions).apply {
                     boundsBuilder.include(position)
@@ -72,7 +76,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
                 }
             }
 
-            if (focus) {
+            if (!imperceptibly) {
                 moveCamera(CameraUpdateFactory
                         .newLatLngBounds(boundsBuilder.build(), 30))
             }
@@ -88,6 +92,13 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
 
                 override fun onCancel() = Unit
             })
+        }
+    }
+
+    override fun updateMember(member: Member) {
+        member.apply {
+            markers[id]?.position = LatLng(lat.toDouble(), lng.toDouble())
+            membersListAdapter.updateMember(this)
         }
     }
 }

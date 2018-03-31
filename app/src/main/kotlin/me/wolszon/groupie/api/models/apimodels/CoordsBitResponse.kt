@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 
 data class CoordsBitResponse(
     @Json(name = "lat")
-    var lat: Double,
+    var lat: Float,
     @Json(name = "lng")
-    var lng: Double
+    var lng: Float
 )

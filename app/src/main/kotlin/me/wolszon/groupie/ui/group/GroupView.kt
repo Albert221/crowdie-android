@@ -4,6 +4,7 @@ import me.wolszon.groupie.api.models.dataclass.Member
 import me.wolszon.groupie.base.BaseView
 
 interface GroupView : BaseView {
-    fun showMembers(members : List<Member>, focus: Boolean = true)
+    fun showMembers(members : List<Member>, imperceptibly: Boolean = false)
     fun focusMemberOnMap(id: String)
+    fun updateMember(member: Member)
 }
