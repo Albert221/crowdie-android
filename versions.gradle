@@ -2,7 +2,7 @@ ext {
     versions = [
             buildTools        : '27.0.3',
             androidPlugin     : '3.2.0-alpha04',
-            kotlin            : '1.2.10',
+            kotlin            : '1.2.30',
             supportLibrary    : '27.0.2',
             constraintLayout  : '1.0.2',
             swipeLayout       : '1.2.0',
