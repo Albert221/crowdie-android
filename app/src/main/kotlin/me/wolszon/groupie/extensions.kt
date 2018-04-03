@@ -15,3 +15,7 @@ fun RecyclerView.prepare() {
 
 fun ViewGroup.inflate(layoutId: Int): View =
         LayoutInflater.from(context).inflate(layoutId, this, false)
+
+var View.isVisible: Boolean
+    get() = visibility == View.VISIBLE
+    set(value) { visibility = if (value) View.VISIBLE else View.GONE }

@@ -12,25 +12,32 @@
 
         <ImageView
             android:id="@+id/suppress"
-            android:layout_width="27dp"
-            android:layout_height="30dp"
+            android:background="@color/roleSwitch"
+            android:layout_width="51dp"
+            android:layout_height="match_parent"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
             android:src="@drawable/ic_star_border"
             android:visibility="gone"
             android:contentDescription="@string/suppress" />
 
         <ImageView
             android:id="@+id/promote"
-            android:layout_width="27dp"
-            android:layout_height="30dp"
+            android:background="@color/roleSwitch"
+            android:layout_width="51dp"
+            android:layout_height="match_parent"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
             android:src="@drawable/ic_star"
             android:contentDescription="@string/promote" />
 
         <ImageView
             android:id="@+id/block"
-            android:layout_width="27dp"
-            android:layout_height="30dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
+            android:background="@color/block"
+            android:layout_width="51dp"
+            android:layout_height="match_parent"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
             android:src="@drawable/ic_block"
             android:contentDescription="@string/block" />
 
@@ -38,6 +45,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/clickableArea"
+        android:background="@android:color/background_light"
         android:padding="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
