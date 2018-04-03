@@ -4,4 +4,8 @@
     <string name="promote">Promote</string>
     <string name="suppress">Suppress</string>
     <string name="block">Block</string>
+    <string name="invite">Invite</string>
+    <string name="qr_code_label">Make members scan QR code or enter text below manually.</string>
+    <string name="invite_qr_code">Invite QR code</string>
+    <string name="your_group">Your group</string>
 </resources>

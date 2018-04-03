@@ -3,17 +3,17 @@ package me.wolszon.groupie.ui.group
 import me.wolszon.groupie.api.models.dataclass.Group
 import me.wolszon.groupie.api.models.dataclass.Member
 import me.wolszon.groupie.api.repository.GroupApi
+import me.wolszon.groupie.api.state.GroupState
 import me.wolszon.groupie.base.BasePresenter
 import me.wolszon.groupie.base.Schedulers
 
 class GroupPresenter(val schedulers : Schedulers, val groupApi : GroupApi) : BasePresenter<GroupView>() {
-    val id = "d175a80a-399a-4c89-b05a-1b8e2decab57"
-
+    private val groupState by lazy { GroupState }
     lateinit var group: Group
 
     fun loadMembers() {
         compositeObservable.add(
-                groupApi.find(id)
+                groupApi.find(groupState.groupId)
                         .subscribeOn(schedulers.backgroundThread())
                         .observeOn(schedulers.mainThread())
                         .subscribe({

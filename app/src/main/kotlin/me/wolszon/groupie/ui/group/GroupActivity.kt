@@ -1,21 +1,24 @@
 package me.wolszon.groupie.ui.group
 
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.Toolbar
+import android.view.Menu
+import android.view.MenuItem
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_group.*
 import me.wolszon.groupie.R
 import me.wolszon.groupie.api.models.dataclass.Member
+import me.wolszon.groupie.api.state.GroupState
 import me.wolszon.groupie.base.BaseActivity
 import me.wolszon.groupie.prepare
 import me.wolszon.groupie.ui.adapter.MembersListAdapter
+import me.wolszon.groupie.ui.groupqr.GroupQrActivity
 import javax.inject.Inject
 
 class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
@@ -25,9 +28,14 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
     private var markers = hashMapOf<String, Marker>()
     @Inject lateinit var membersListAdapter: MembersListAdapter
 
+    companion object {
+        private const val BUNDLE_CAMERA_POSITION = "CAMERA_POSITION"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_group)
+        setSupportActionBar(toolbar)
 
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
@@ -51,9 +59,21 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
         presenter.unsubscribe()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.group_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_qr -> {
+            startActivity(GroupQrActivity.createIntent(this, GroupState.groupId))
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
+    }
+
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-
         presenter.loadMembers()
     }
 
