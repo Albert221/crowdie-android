@@ -2,9 +2,11 @@ package me.wolszon.groupie.ui.groupqr
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.widget.Toolbar
+import android.util.LruCache
 import kotlinx.android.synthetic.main.activity_group_qr.*
 import me.wolszon.groupie.R
 import me.wolszon.groupie.base.BaseActivity
@@ -29,8 +31,24 @@ class GroupQrActivity : BaseActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         id.text = groupId
-        qr.setImageBitmap(
-                QRCode.from(groupId).withSize(500, 500).withColor(Color.BLACK, Color.TRANSPARENT).bitmap()
-        )
+        qr.setImageBitmap(getCachedQrBitmap(groupId))
+    }
+
+    private fun getCachedQrBitmap(groupId: String): Bitmap {
+        val cache = LruCache<String, Bitmap>(1 * 1024 * 1024)
+
+        synchronized(cache) {
+            if (cache.get(groupId) == null) {
+                val bitmap = QRCode
+                        .from(groupId)
+                        .withSize(500, 500)
+                        .withColor(Color.BLACK, Color.TRANSPARENT)
+                        .bitmap()
+
+                cache.put(groupId, bitmap)
+            }
+        }
+
+        return cache.get(groupId)
     }
 }
