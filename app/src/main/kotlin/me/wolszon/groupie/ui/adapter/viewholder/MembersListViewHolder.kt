@@ -11,7 +11,8 @@ import me.wolszon.groupie.isVisible
 class MembersListViewHolder(override val containerView: View,
                             private val onMemberClickListener: (String) -> Unit,
                             private val onMemberPromoteListener: (String) -> Unit,
-                            private val onMemberSuppressListener: (String) -> Unit) : RecyclerView.ViewHolder(containerView), LayoutContainer {
+                            private val onMemberSuppressListener: (String) -> Unit,
+                            private val onMemberBlockListener: (String) -> Unit) : RecyclerView.ViewHolder(containerView), LayoutContainer {
     fun bindView(member: Member) {
         (containerView as SwipeLayout).showMode = SwipeLayout.ShowMode.LayDown
         name.text = member.name
@@ -27,5 +28,6 @@ class MembersListViewHolder(override val containerView: View,
         clickableArea.setOnClickListener { onMemberClickListener(member.id) }
         promote.setOnClickListener { onMemberPromoteListener(member.id) }
         suppress.setOnClickListener { onMemberSuppressListener(member.id) }
+        block.setOnClickListener { onMemberBlockListener(member.id) }
     }
 }

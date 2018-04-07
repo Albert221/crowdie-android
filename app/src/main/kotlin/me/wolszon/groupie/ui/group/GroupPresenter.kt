@@ -45,4 +45,23 @@ class GroupPresenter(val schedulers : Schedulers, val groupApi : GroupApi) : Bas
                         }, { view?.showErrorDialog(it) })
         )
     }
+
+    fun blockMember(id: String) {
+        val member = group.members.find { it.id == id }!!
+
+        view?.displayMemberBlockConfirmation(member) {
+            result ->
+            if (!result) return@displayMemberBlockConfirmation
+
+            compositeObservable.add(
+                    groupApi.kickMember(id)
+                            .subscribeOn(schedulers.backgroundThread())
+                            .observeOn(schedulers.mainThread())
+                            .subscribe({
+                                group.members.dropWhile { it.id == id }
+                                view?.removeMember(member)
+                            }, { view?.showErrorDialog(it) })
+            )
+        }
+    }
 }

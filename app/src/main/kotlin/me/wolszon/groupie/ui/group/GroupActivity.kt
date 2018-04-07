@@ -1,5 +1,6 @@
 package me.wolszon.groupie.ui.group
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.widget.DividerItemDecoration
@@ -44,6 +45,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
         membersListAdapter.onMemberClickListener = this::focusMemberOnMap
         membersListAdapter.onMemberPromoteListener = presenter::promoteMember
         membersListAdapter.onMemberSuppressListener = presenter::suppressMember
+        membersListAdapter.onMemberBlockListener= presenter::blockMember
         membersList.apply {
             prepare()
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
@@ -119,6 +121,31 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
         member.apply {
             markers[id]?.position = LatLng(lat.toDouble(), lng.toDouble())
             membersListAdapter.updateMember(this)
+        }
+    }
+
+    override fun displayMemberBlockConfirmation(member: Member, callback: (Boolean) -> Unit) {
+        AlertDialog.Builder(this)
+                .setTitle("Usuwanie członka")
+                .setMessage("Czy na pewno chcesz usunąć %s?".format(member.name))
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes) {
+                    _, _ ->
+                    callback(true)
+                }
+                .setNegativeButton(android.R.string.no) {
+                    _, _ ->
+                    callback(false)
+                }
+                .show()
+    }
+
+    override fun removeMember(member: Member) {
+        member.apply {
+            markers[id]?.remove()
+            markers.remove(id)
+
+            membersListAdapter.removeMember(member)
         }
     }
 }

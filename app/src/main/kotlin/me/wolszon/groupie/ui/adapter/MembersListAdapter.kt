@@ -14,18 +14,22 @@ class MembersListAdapter @Inject() constructor() : RecyclerView.Adapter<MembersL
     lateinit var onMemberClickListener: (String) -> Unit
     lateinit var onMemberPromoteListener: (String) -> Unit
     lateinit var onMemberSuppressListener: (String) -> Unit
+    lateinit var onMemberBlockListener: (String) -> Unit
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MembersListViewHolder =
             MembersListViewHolder(parent.inflate(R.layout.members_list_item),
                                   onMemberClickListener,
                                   onMemberPromoteListener,
-                                  onMemberSuppressListener)
+                                  onMemberSuppressListener,
+                                  onMemberBlockListener)
 
     override fun onBindViewHolder(holder: MembersListViewHolder?, position: Int) {
         holder?.apply {
             bindView(members[position])
         }
     }
+
+    override fun getItemCount(): Int = members.count()
 
     fun showMembers(members: List<Member>) {
         this.members.apply {
@@ -43,5 +47,10 @@ class MembersListAdapter @Inject() constructor() : RecyclerView.Adapter<MembersL
         }
     }
 
-    override fun getItemCount(): Int = members.count()
+    fun removeMember(member: Member) {
+        members.indexOf(member).apply {
+            members.removeAt(this)
+            notifyItemRemoved(this)
+        }
+    }
 }
