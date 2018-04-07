@@ -30,8 +30,12 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
     @Inject lateinit var membersListAdapter: MembersListAdapter
 
     companion object {
-        fun createIntent(context: Context): Intent {
-            return Intent(context, GroupActivity::class.java)
+        const val EXTRA_GROUP_ID = "GROUP_ID"
+
+        fun createIntent(context: Context, groupId: String): Intent {
+            return Intent(context, GroupActivity::class.java).apply {
+                putExtra(EXTRA_GROUP_ID, groupId)
+            }
         }
     }
 
@@ -55,6 +59,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
             adapter = membersListAdapter
         }
 
+        presenter.groupId = intent.getStringExtra(EXTRA_GROUP_ID)
         presenter.subscribe(this)
     }
 

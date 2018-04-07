@@ -14,17 +14,21 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity
-            android:name=".ui.group.GroupActivity"
-            android:label="@string/your_group"
-            android:launchMode="singleTop"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity android:name=".ui.landing.LandingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.group.GroupActivity"
+            android:label="@string/your_group"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        </activity>
+
         <activity
             android:name=".ui.groupqr.GroupQrActivity"
             android:label="@string/invite_qr_code"

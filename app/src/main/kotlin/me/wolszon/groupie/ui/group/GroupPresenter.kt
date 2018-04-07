@@ -8,14 +8,16 @@ import me.wolszon.groupie.base.BasePresenter
 import me.wolszon.groupie.base.Schedulers
 import me.wolszon.groupie.ui.Navigator
 
-class GroupPresenter(val schedulers: Schedulers, val groupApi: GroupApi, val navigator: Navigator) : BasePresenter<GroupView>() {
-    private val groupState by lazy { GroupState }
+class GroupPresenter(private val schedulers: Schedulers,
+                     private val groupApi: GroupApi,
+                     private val navigator: Navigator) : BasePresenter<GroupView>() {
+    lateinit var groupId: String
     lateinit var group: Group
 
     // This method is called so frequently, because during
     fun loadMembers() {
         run {
-            groupApi.find(groupState.groupId)
+            groupApi.find(groupId)
                     .subscribeOn(schedulers.backgroundThread())
                     .observeOn(schedulers.mainThread())
                     .subscribe({
