@@ -13,15 +13,15 @@ class GroupPresenter(val schedulers : Schedulers, val groupApi : GroupApi) : Bas
 
     // This method is called so frequently, because during
     fun loadMembers() {
-        compositeObservable.add(
-                groupApi.find(groupState.groupId)
-                        .subscribeOn(schedulers.backgroundThread())
-                        .observeOn(schedulers.mainThread())
-                        .subscribe({
-                            group = it
-                            view?.showMembers(it.members)
-                        }, { view?.showErrorDialog(it) })
-        )
+        run {
+            groupApi.find(groupState.groupId)
+                    .subscribeOn(schedulers.backgroundThread())
+                    .observeOn(schedulers.mainThread())
+                    .subscribe({
+                        group = it
+                        view?.showMembers(it.members)
+                    }, { view?.showErrorDialog(it) })
+        }
     }
 
     fun promoteMember(id: String) {
@@ -33,14 +33,14 @@ class GroupPresenter(val schedulers : Schedulers, val groupApi : GroupApi) : Bas
     }
 
     private fun updateMemberRole(id: String, role: Int) {
-        compositeObservable.add(
-                groupApi.updateMemberRole(id, role)
-                        .subscribeOn(schedulers.backgroundThread())
-                        .observeOn(schedulers.mainThread())
-                        .subscribe({
-                            loadMembers()
-                        }, { view?.showErrorDialog(it) })
-        )
+        run {
+            groupApi.updateMemberRole(id, role)
+                    .subscribeOn(schedulers.backgroundThread())
+                    .observeOn(schedulers.mainThread())
+                    .subscribe({
+                        loadMembers()
+                    }, { view?.showErrorDialog(it) })
+        }
     }
 
     fun blockMember(id: String) {
@@ -50,14 +50,14 @@ class GroupPresenter(val schedulers : Schedulers, val groupApi : GroupApi) : Bas
             result ->
             if (!result) return@displayMemberBlockConfirmation
 
-            compositeObservable.add(
-                    groupApi.kickMember(id)
-                            .subscribeOn(schedulers.backgroundThread())
-                            .observeOn(schedulers.mainThread())
-                            .subscribe({
-                                loadMembers()
-                            }, { view?.showErrorDialog(it) })
-            )
+            run {
+                groupApi.kickMember(id)
+                        .subscribeOn(schedulers.backgroundThread())
+                        .observeOn(schedulers.mainThread())
+                        .subscribe({
+                            loadMembers()
+                        }, { view?.showErrorDialog(it) })
+            }
         }
     }
 }

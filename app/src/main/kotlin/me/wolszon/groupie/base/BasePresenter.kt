@@ -1,6 +1,7 @@
 package me.wolszon.groupie.base
 
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 
 // Should be extended by all Presenters.
 open class BasePresenter<T : BaseView> {
@@ -18,5 +19,9 @@ open class BasePresenter<T : BaseView> {
     open fun unsubscribe() {
         view = null
         compositeObservable.dispose()
+    }
+
+    fun run(disposable: () -> Disposable) {
+        compositeObservable.add(disposable())
     }
 }
