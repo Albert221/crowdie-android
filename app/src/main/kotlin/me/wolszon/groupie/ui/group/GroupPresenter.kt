@@ -11,6 +11,7 @@ class GroupPresenter(val schedulers : Schedulers, val groupApi : GroupApi) : Bas
     private val groupState by lazy { GroupState }
     lateinit var group: Group
 
+    // This method is called so frequently, because during
     fun loadMembers() {
         compositeObservable.add(
                 groupApi.find(groupState.groupId)
@@ -37,11 +38,7 @@ class GroupPresenter(val schedulers : Schedulers, val groupApi : GroupApi) : Bas
                         .subscribeOn(schedulers.backgroundThread())
                         .observeOn(schedulers.mainThread())
                         .subscribe({
-                            group.members.apply {
-                                dropWhile { it.id == id }
-                                add(it)
-                                view?.updateMember(it)
-                            }
+                            loadMembers()
                         }, { view?.showErrorDialog(it) })
         )
     }
@@ -58,8 +55,7 @@ class GroupPresenter(val schedulers : Schedulers, val groupApi : GroupApi) : Bas
                             .subscribeOn(schedulers.backgroundThread())
                             .observeOn(schedulers.mainThread())
                             .subscribe({
-                                group.members.dropWhile { it.id == id }
-                                view?.removeMember(member)
+                                loadMembers()
                             }, { view?.showErrorDialog(it) })
             )
         }

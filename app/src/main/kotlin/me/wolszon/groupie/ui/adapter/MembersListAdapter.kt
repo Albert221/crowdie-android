@@ -1,6 +1,8 @@
 package me.wolszon.groupie.ui.adapter
 
+import android.os.Handler
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.ViewGroup
 import me.wolszon.groupie.R
 import me.wolszon.groupie.api.models.dataclass.Member
@@ -31,24 +33,27 @@ class MembersListAdapter @Inject() constructor() : RecyclerView.Adapter<MembersL
 
     override fun getItemCount(): Int = members.count()
 
-    fun showMembers(members: List<Member>) {
-        this.members.apply {
-            clear()
-            addAll(members)
-            notifyDataSetChanged()
-        }
+    fun addMember(member: Member) {
+        members.add(member)
+
+        // FIXME: Method commented below result in items not showing in RecyclerView. STRANGE!
+        // notifyItemInserted(members.indexOfFirst { it.id == member.id })
+
+        notifyDataSetChanged()
     }
 
     fun updateMember(member: Member) {
-        members.apply {
-            val index = indexOfFirst { it.id == member.id }
-            set(index, member)
-            notifyItemChanged(index)
+        // Prevent updating unchanged items
+        if (members.indexOfFirst { it == member } != -1) return
+
+        members.indexOfFirst { it.id == member.id }.apply {
+            members[this] = member
+            notifyItemChanged(this)
         }
     }
 
-    fun removeMember(member: Member) {
-        members.indexOf(member).apply {
+    fun removeMember(memberId: String) {
+        members.indexOfFirst { it.id == memberId }.apply {
             members.removeAt(this)
             notifyItemRemoved(this)
         }

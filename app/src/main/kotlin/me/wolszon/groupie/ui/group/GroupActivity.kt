@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -26,12 +27,8 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
     @Inject lateinit var presenter: GroupPresenter
 
     private lateinit var map: GoogleMap
-    private var markers = hashMapOf<String, Marker>()
+    private val markers = hashMapOf<String, Marker>()
     @Inject lateinit var membersListAdapter: MembersListAdapter
-
-    companion object {
-        private const val BUNDLE_CAMERA_POSITION = "CAMERA_POSITION"
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,29 +76,46 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
         presenter.loadMembers()
     }
 
-    override fun showMembers(members: List<Member>, imperceptibly: Boolean) {
-        membersListAdapter.showMembers(members)
+    override fun showMembers(members: List<Member>) {
+        val freshLoad = markers.isEmpty()
+        val markersToDelete = markers.keys.toMutableList()
 
-        map.apply {
-            clear()
-            markers.clear()
+        val boundsBuilder = LatLngBounds.Builder()
+        members.forEach {
+            markersToDelete.remove(it.id)
 
-            val boundsBuilder = LatLngBounds.Builder()
-            members.forEach {
-                val markerOptions = MarkerOptions()
-                        .title(it.name)
-                        .position(LatLng(it.lat.toDouble(), it.lng.toDouble()))
+            if (!markers.containsKey(it.id)) {
+                // Given member doesn't have corresponding marker, so it's new. Create one
+                markers[it.id] = map.addMarker(MarkerOptions().position(LatLng(0.0, 0.0)))
 
-                addMarker(markerOptions).apply {
-                    boundsBuilder.include(position)
-                    markers[it.id] = this
-                }
+                membersListAdapter.addMember(it)
+            } else {
+                membersListAdapter.updateMember(it)
             }
 
-            if (!imperceptibly) {
-                moveCamera(CameraUpdateFactory
-                        .newLatLngBounds(boundsBuilder.build(), 30))
+            markers[it.id]!!.apply{
+                position = LatLng(it.lat.toDouble(), it.lng.toDouble())
+                title = it.name
+
+                boundsBuilder.include(position)
             }
+        }
+
+        markersToDelete.forEach {
+            markers[it]?.remove()
+            markers.remove(it)
+
+            membersListAdapter.removeMember(it)
+        }
+
+        // Move map's camera boundaries to have it containing all markers
+        if (freshLoad) {
+            map.moveCamera(CameraUpdateFactory
+                    .newLatLngBounds(boundsBuilder.build(), 30))
+        } else {
+            // TODO: Determine whether map is centered or moved by user, if it's moved, then don't move camera here.
+            map.animateCamera(CameraUpdateFactory
+                    .newLatLngBounds(boundsBuilder.build(), 30))
         }
     }
 
@@ -114,13 +128,6 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
 
                 override fun onCancel() = Unit
             })
-        }
-    }
-
-    override fun updateMember(member: Member) {
-        member.apply {
-            markers[id]?.position = LatLng(lat.toDouble(), lng.toDouble())
-            membersListAdapter.updateMember(this)
         }
     }
 
@@ -138,14 +145,5 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
                     callback(false)
                 }
                 .show()
-    }
-
-    override fun removeMember(member: Member) {
-        member.apply {
-            markers[id]?.remove()
-            markers.remove(id)
-
-            membersListAdapter.removeMember(member)
-        }
     }
 }
