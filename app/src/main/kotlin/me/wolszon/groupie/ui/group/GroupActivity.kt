@@ -83,6 +83,8 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+        map.uiSettings.isMapToolbarEnabled = false
+
         presenter.loadMembers()
     }
 
@@ -104,7 +106,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
             }
 
             markers[it.id]!!.apply{
-                position = LatLng(it.lat.toDouble(), it.lng.toDouble())
+                position = it.getLatLng()
                 title = it.name
 
                 boundsBuilder.include(position)
