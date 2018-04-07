@@ -6,8 +6,9 @@ import me.wolszon.groupie.api.repository.GroupApi
 import me.wolszon.groupie.api.state.GroupState
 import me.wolszon.groupie.base.BasePresenter
 import me.wolszon.groupie.base.Schedulers
+import me.wolszon.groupie.ui.Navigator
 
-class GroupPresenter(val schedulers : Schedulers, val groupApi : GroupApi) : BasePresenter<GroupView>() {
+class GroupPresenter(val schedulers: Schedulers, val groupApi: GroupApi, val navigator: Navigator) : BasePresenter<GroupView>() {
     private val groupState by lazy { GroupState }
     lateinit var group: Group
 
@@ -59,5 +60,9 @@ class GroupPresenter(val schedulers : Schedulers, val groupApi : GroupApi) : Bas
                         }, { view?.showErrorDialog(it) })
             }
         }
+    }
+
+    fun showQr() {
+        navigator.openGroupQrActivity(group.id)
     }
 }

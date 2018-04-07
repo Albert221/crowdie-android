@@ -1,11 +1,10 @@
 package me.wolszon.groupie.ui.group
 
 import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -29,6 +28,12 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
     private lateinit var map: GoogleMap
     private val markers = hashMapOf<String, Marker>()
     @Inject lateinit var membersListAdapter: MembersListAdapter
+
+    companion object {
+        fun createIntent(context: Context): Intent {
+            return Intent(context, GroupActivity::class.java)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +70,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.action_qr -> {
-            startActivity(GroupQrActivity.createIntent(this, GroupState.groupId))
+            presenter.showQr()
             true
         }
         else -> super.onOptionsItemSelected(item)

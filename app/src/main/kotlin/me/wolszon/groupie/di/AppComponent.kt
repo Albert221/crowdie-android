@@ -9,12 +9,12 @@ import me.wolszon.groupie.di.modules.RepositoryModule
 import javax.inject.Singleton
 
 @Singleton
-@Component( modules = [
+@Component(modules = [
     AndroidSupportInjectionModule::class,
     AppModule::class,
     NetworkModule::class,
     RepositoryModule::class,
-    ActivityBuilder::class] )
+    ActivityBuilder::class])
 internal interface AppComponent : AndroidInjector<GroupieApplication> {
     @Component.Builder
     abstract class Builder : AndroidInjector.Builder<GroupieApplication>()

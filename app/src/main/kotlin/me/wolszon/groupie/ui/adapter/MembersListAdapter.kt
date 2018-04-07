@@ -1,8 +1,6 @@
 package me.wolszon.groupie.ui.adapter
 
-import android.os.Handler
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.ViewGroup
 import me.wolszon.groupie.R
 import me.wolszon.groupie.api.models.dataclass.Member

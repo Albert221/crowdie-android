@@ -7,6 +7,6 @@ import me.wolszon.groupie.api.models.dataclass.Member
 class GroupMapper {
     companion object : Mapper<GroupResponse, Group> {
         override fun map(value: GroupResponse): Group =
-            Group(value.members.map { MemberMapper.map(it) }.toMutableList())
+            Group(value.id, value.members.map { MemberMapper.map(it) }.toMutableList())
     }
 }
