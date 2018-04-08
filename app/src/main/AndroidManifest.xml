@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".GroupieApplication"
@@ -32,7 +33,7 @@
         <activity
             android:name=".ui.groupqr.GroupQrActivity"
             android:label="@string/invite_qr_code"
-            android:parentActivityName=".ui.group.GroupActivity"/>
+            android:parentActivityName=".ui.group.GroupActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

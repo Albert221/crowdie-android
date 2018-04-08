@@ -23,8 +23,8 @@ class MembersListAdapter @Inject() constructor() : RecyclerView.Adapter<MembersL
                                   onMemberSuppressListener,
                                   onMemberBlockListener)
 
-    override fun onBindViewHolder(holder: MembersListViewHolder?, position: Int) {
-        holder?.apply {
+    override fun onBindViewHolder(holder: MembersListViewHolder, position: Int) {
+        holder.apply {
             bindView(members[position])
         }
     }
