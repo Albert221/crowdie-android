@@ -66,7 +66,12 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
-            android:text="TextView"
+            android:fontFamily="sans-serif-medium"
+            android:paddingLeft="4sp"
+            android:paddingRight="4sp"
+            android:background="@drawable/pill_distance"
+            android:textColor="@android:color/holo_green_dark"
+            android:text="1.7KM"
             app:layout_constraintBaseline_toBaselineOf="@+id/name"
             app:layout_constraintEnd_toEndOf="parent" />
 

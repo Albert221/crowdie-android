@@ -9,7 +9,7 @@ import me.wolszon.groupie.ui.adapter.viewholder.MembersListViewHolder
 import javax.inject.Inject
 
 class MembersListAdapter @Inject() constructor() : RecyclerView.Adapter<MembersListViewHolder>() {
-    val members = arrayListOf<Member>()
+    private val members = arrayListOf<Member>()
 
     lateinit var onMemberClickListener: (String) -> Unit
     lateinit var onMemberPromoteListener: (String) -> Unit
@@ -33,11 +33,6 @@ class MembersListAdapter @Inject() constructor() : RecyclerView.Adapter<MembersL
 
     fun addMember(member: Member) {
         members.add(member)
-
-        // FIXME: Method commented below result in items not showing in RecyclerView. STRANGE!
-        // notifyItemInserted(members.indexOfFirst { it.id == member.id })
-
-        notifyDataSetChanged()
     }
 
     fun updateMember(member: Member) {
@@ -46,14 +41,17 @@ class MembersListAdapter @Inject() constructor() : RecyclerView.Adapter<MembersL
 
         members.indexOfFirst { it.id == member.id }.apply {
             members[this] = member
-            notifyItemChanged(this)
         }
     }
 
     fun removeMember(memberId: String) {
         members.indexOfFirst { it.id == memberId }.apply {
             members.removeAt(this)
-            notifyItemRemoved(this)
         }
+    }
+
+    fun commitChanges() {
+        members.sortBy { it.distanceFromUser() }
+        notifyDataSetChanged()
     }
 }
