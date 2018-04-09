@@ -6,6 +6,13 @@ import me.wolszon.groupie.api.models.dataclass.Member
 class MemberMapper {
     companion object : Mapper<MemberResponse, Member> {
         override fun map(value: MemberResponse): Member =
-                Member(value.id, value.name, value.role, value.coordsBit.lat, value.coordsBit.lng)
+                Member(
+                        id = value.id,
+                        name = value.name,
+                        role = value.role,
+                        lat = value.coordsBit.lat,
+                        lng = value.coordsBit.lng,
+                        androidId = value.androidId
+                )
     }
 }

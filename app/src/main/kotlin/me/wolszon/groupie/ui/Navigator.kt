@@ -3,7 +3,7 @@ package me.wolszon.groupie.ui
 import android.app.Activity
 import android.content.Intent
 import me.wolszon.groupie.ui.group.GroupActivity
-import me.wolszon.groupie.ui.groupqr.GroupQrActivity
+import me.wolszon.groupie.ui.group.GroupQrActivity
 
 interface NavigatorInterface {
     fun openGroupActivity(groupId: String)

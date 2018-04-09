@@ -5,6 +5,7 @@ import android.view.View
 import com.daimajia.swipe.SwipeLayout
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.members_list_item.*
+import me.wolszon.groupie.GroupieApplication
 import me.wolszon.groupie.api.models.dataclass.Member
 import me.wolszon.groupie.isVisible
 
@@ -23,6 +24,11 @@ class MembersListViewHolder(override val containerView: View,
         } else {
             promote.isVisible = false
             suppress.isVisible = true
+        }
+
+        status.text = when (member.androidId) {
+            GroupieApplication.androidId -> "YOU"
+            else -> "rotfl"
         }
 
         clickableArea.setOnClickListener { onMemberClickListener(member.id) }

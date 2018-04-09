@@ -31,7 +31,7 @@
         </activity>
 
         <activity
-            android:name=".ui.groupqr.GroupQrActivity"
+            android:name=".ui.group.GroupQrActivity"
             android:label="@string/invite_qr_code"
             android:parentActivityName=".ui.group.GroupActivity" />
 

@@ -1,29 +1,22 @@
 package me.wolszon.groupie.api.repository
 
 import io.reactivex.Single
+import me.wolszon.groupie.api.models.apimodels.MemberRequest
 import me.wolszon.groupie.api.models.apimodels.GroupResponse
 import me.wolszon.groupie.api.models.apimodels.MemberResponse
 import retrofit2.http.*
 
 interface GroupRetrofitApi {
-    @FormUrlEncoded
     @POST("/group")
-    fun newGroup(
-            @Field("name") creatorName: String,
-            @Field("lat") creatorLat: Float,
-            @Field("lng") creatorLng: Float
-    ): Single<GroupResponse>
+    fun newGroup(@Body creator: MemberRequest): Single<GroupResponse>
 
     @GET("/group/{id}")
     fun findGroup(@Path("id") id: String): Single<GroupResponse>
 
-    @FormUrlEncoded
     @POST("/group/{id}/member")
     fun addMember(
             @Path("id") groupId: String,
-            @Field("name") name: String,
-            @Field("lat") lat: Float,
-            @Field("lng") lng: Float
+            @Body member: MemberRequest
     ): Single<GroupResponse>
 
     @FormUrlEncoded

@@ -15,11 +15,10 @@ import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_group.*
 import me.wolszon.groupie.R
 import me.wolszon.groupie.api.models.dataclass.Member
-import me.wolszon.groupie.api.state.GroupState
 import me.wolszon.groupie.base.BaseActivity
+import me.wolszon.groupie.isVisible
 import me.wolszon.groupie.prepare
 import me.wolszon.groupie.ui.adapter.MembersListAdapter
-import me.wolszon.groupie.ui.groupqr.GroupQrActivity
 import javax.inject.Inject
 
 class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {

@@ -3,7 +3,6 @@ package me.wolszon.groupie.ui.group
 import me.wolszon.groupie.api.models.dataclass.Group
 import me.wolszon.groupie.api.models.dataclass.Member
 import me.wolszon.groupie.api.repository.GroupApi
-import me.wolszon.groupie.api.state.GroupState
 import me.wolszon.groupie.base.BasePresenter
 import me.wolszon.groupie.base.Schedulers
 import me.wolszon.groupie.ui.Navigator

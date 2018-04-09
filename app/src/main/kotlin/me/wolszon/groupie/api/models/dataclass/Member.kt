@@ -7,7 +7,8 @@ data class Member (
         val name: String,
         val role: Int,
         val lat: Float,
-        val lng: Float
+        val lng: Float,
+        val androidId: String
 ) {
     companion object {
         const val MEMBER = 0

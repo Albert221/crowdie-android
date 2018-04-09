@@ -1,5 +1,7 @@
 package me.wolszon.groupie.ui.landing
 
+import me.wolszon.groupie.GroupieApplication
+import me.wolszon.groupie.api.models.apimodels.MemberRequest
 import me.wolszon.groupie.api.repository.GroupApi
 import me.wolszon.groupie.base.BasePresenter
 import me.wolszon.groupie.base.Schedulers
@@ -10,8 +12,9 @@ class LandingPresenter(private val schedulers: Schedulers,
                        private val navigator: Navigator) : BasePresenter<LandingView>() {
     fun createGroup() {
         run {
-            // FIXME: Hardcoded data
-            groupApi.newGroup("John Doe", 54.446838f, 18.571800f)
+            val creator = getUserMemberRequest()
+
+            groupApi.newGroup(creator)
                     .subscribeOn(schedulers.backgroundThread())
                     .observeOn(schedulers.mainThread())
                     .subscribe({
@@ -22,7 +25,9 @@ class LandingPresenter(private val schedulers: Schedulers,
 
     fun joinExistingGroup(groupId: String) {
         run {
-            groupApi.addMember(groupId, "John Doe", 54.446838f, 18.571800f)
+            val member = getUserMemberRequest()
+
+            groupApi.addMember(groupId, member)
                     .subscribeOn(schedulers.backgroundThread())
                     .observeOn(schedulers.mainThread())
                     .subscribe({
@@ -30,4 +35,8 @@ class LandingPresenter(private val schedulers: Schedulers,
                     }, { view?.showErrorDialog(it) })
         }
     }
+
+    // FIXME: Hardcoded data
+    private fun getUserMemberRequest(): MemberRequest =
+            MemberRequest(name = "John Doe", lat = 54.446838f, lng = 18.571800f, androidId = GroupieApplication.androidId)
 }
