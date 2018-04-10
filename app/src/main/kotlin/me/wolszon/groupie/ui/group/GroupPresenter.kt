@@ -64,6 +64,6 @@ class GroupPresenter(private val schedulers: Schedulers,
     }
 
     fun showQr() {
-        navigator.openGroupQrActivity(group.id)
+        navigator.openGroupQrActivity(groupId)
     }
 }

@@ -24,8 +24,10 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
     @Inject lateinit var presenter: GroupPresenter
 
     private lateinit var map: GoogleMap
-    private val markers = hashMapOf<String, Marker>()
     @Inject lateinit var membersListAdapter: MembersListAdapter
+
+    private val markers = hashMapOf<String, Marker>()
+    private var alreadyLoaded = false
 
     companion object {
         const val EXTRA_GROUP_ID = "GROUP_ID"
@@ -87,7 +89,6 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
     }
 
     override fun showMembers(members: List<Member>) {
-        val freshLoad = markers.isEmpty()
         val markersToDelete = markers.keys.toMutableList()
 
         val boundsBuilder = LatLngBounds.Builder()
@@ -120,14 +121,17 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
 
         membersListAdapter.commitChanges()
 
+
         // Move map's camera boundaries to have it containing all markers
-        if (freshLoad) {
+        val mapPadding = 100
+        if (!alreadyLoaded) {
             map.moveCamera(CameraUpdateFactory
-                    .newLatLngBounds(boundsBuilder.build(), 30))
+                    .newLatLngBounds(boundsBuilder.build(), mapPadding))
+            alreadyLoaded = true
         } else {
             // TODO: Determine whether map is centered or moved by user, if it's moved, then don't move camera here.
             map.animateCamera(CameraUpdateFactory
-                    .newLatLngBounds(boundsBuilder.build(), 30))
+                    .newLatLngBounds(boundsBuilder.build(), mapPadding))
         }
     }
 
