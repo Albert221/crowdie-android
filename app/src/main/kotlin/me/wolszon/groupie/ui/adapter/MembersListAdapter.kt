@@ -16,6 +16,10 @@ class MembersListAdapter @Inject() constructor() : RecyclerView.Adapter<MembersL
     lateinit var onMemberSuppressListener: (String) -> Unit
     lateinit var onMemberBlockListener: (String) -> Unit
 
+    init {
+        setHasStableIds(true)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MembersListViewHolder =
             MembersListViewHolder(parent.inflate(R.layout.members_list_item),
                                   onMemberClickListener,
@@ -30,6 +34,8 @@ class MembersListAdapter @Inject() constructor() : RecyclerView.Adapter<MembersL
     }
 
     override fun getItemCount(): Int = members.count()
+
+    override fun getItemId(position: Int): Long = members[position].id.hashCode().toLong()
 
     fun addMember(member: Member) {
         members.add(member)
