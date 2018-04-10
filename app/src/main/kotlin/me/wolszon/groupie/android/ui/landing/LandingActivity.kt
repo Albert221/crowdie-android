@@ -1,4 +1,4 @@
-package me.wolszon.groupie.ui.landing
+package me.wolszon.groupie.android.ui.landing
 
 import android.Manifest
 import android.content.Intent
@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.activity_landing.*
 import me.wolszon.groupie.R
 import me.wolszon.groupie.base.BaseActivity
 import me.wolszon.groupie.isVisible
-import me.wolszon.groupie.ui.landing.vision.BarcodeTrackerFactory
+import me.wolszon.groupie.android.ui.landing.vision.BarcodeTrackerFactory
 import javax.inject.Inject
 
 class LandingActivity : BaseActivity(), LandingView {

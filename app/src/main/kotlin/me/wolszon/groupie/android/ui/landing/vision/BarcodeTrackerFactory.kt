@@ -1,4 +1,4 @@
-package me.wolszon.groupie.ui.landing.vision
+package me.wolszon.groupie.android.ui.landing.vision
 
 import com.google.android.gms.vision.MultiProcessor
 import com.google.android.gms.vision.Tracker

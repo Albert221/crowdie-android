@@ -1,4 +1,4 @@
-package me.wolszon.groupie
+package me.wolszon.groupie.android
 
 import android.annotation.SuppressLint
 import android.provider.Settings

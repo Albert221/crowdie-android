@@ -1,9 +1,9 @@
-package me.wolszon.groupie.ui
+package me.wolszon.groupie.android.ui
 
 import android.app.Activity
 import android.content.Intent
-import me.wolszon.groupie.ui.group.GroupActivity
-import me.wolszon.groupie.ui.group.GroupQrActivity
+import me.wolszon.groupie.android.ui.group.GroupActivity
+import me.wolszon.groupie.android.ui.group.GroupQrActivity
 
 interface NavigatorInterface {
     fun openGroupActivity(groupId: String)

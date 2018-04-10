@@ -1,4 +1,4 @@
-package me.wolszon.groupie.ui.landing
+package me.wolszon.groupie.android.ui.landing
 
 import me.wolszon.groupie.base.BaseView
 

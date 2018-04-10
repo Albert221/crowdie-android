@@ -1,4 +1,4 @@
-package me.wolszon.groupie.ui.group
+package me.wolszon.groupie.android.ui.group
 
 import android.app.AlertDialog
 import android.content.Context
@@ -17,7 +17,7 @@ import me.wolszon.groupie.R
 import me.wolszon.groupie.api.models.dataclass.Member
 import me.wolszon.groupie.base.BaseActivity
 import me.wolszon.groupie.prepare
-import me.wolszon.groupie.ui.adapter.MembersListAdapter
+import me.wolszon.groupie.android.ui.adapter.MembersListAdapter
 import javax.inject.Inject
 
 class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {

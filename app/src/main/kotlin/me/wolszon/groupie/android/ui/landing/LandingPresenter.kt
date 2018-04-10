@@ -1,11 +1,11 @@
-package me.wolszon.groupie.ui.landing
+package me.wolszon.groupie.android.ui.landing
 
-import me.wolszon.groupie.GroupieApplication
+import me.wolszon.groupie.android.GroupieApplication
 import me.wolszon.groupie.api.models.apimodels.MemberRequest
 import me.wolszon.groupie.api.repository.GroupApi
 import me.wolszon.groupie.base.BasePresenter
 import me.wolszon.groupie.base.Schedulers
-import me.wolszon.groupie.ui.Navigator
+import me.wolszon.groupie.android.ui.Navigator
 
 class LandingPresenter(private val schedulers: Schedulers,
                        private val groupApi: GroupApi,

@@ -3,7 +3,7 @@ package me.wolszon.groupie.di
 import dagger.Component
 import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
-import me.wolszon.groupie.GroupieApplication
+import me.wolszon.groupie.android.GroupieApplication
 import me.wolszon.groupie.di.modules.NetworkModule
 import me.wolszon.groupie.di.modules.RepositoryModule
 import javax.inject.Singleton

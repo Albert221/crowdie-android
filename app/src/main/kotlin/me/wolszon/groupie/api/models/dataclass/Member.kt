@@ -1,7 +1,7 @@
 package me.wolszon.groupie.api.models.dataclass
 
 import com.google.android.gms.maps.model.LatLng
-import me.wolszon.groupie.GroupieApplication
+import me.wolszon.groupie.android.GroupieApplication
 import java.util.*
 
 data class Member (

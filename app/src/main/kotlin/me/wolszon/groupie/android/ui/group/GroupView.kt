@@ -1,4 +1,4 @@
-package me.wolszon.groupie.ui.group
+package me.wolszon.groupie.android.ui.group
 
 import me.wolszon.groupie.api.models.dataclass.Member
 import me.wolszon.groupie.base.BaseView

@@ -3,7 +3,7 @@ package me.wolszon.groupie.di.modules
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
-import me.wolszon.groupie.GroupieApplication
+import me.wolszon.groupie.android.GroupieApplication
 import me.wolszon.groupie.base.ApplicationSchedulers
 import me.wolszon.groupie.base.Schedulers
 import okhttp3.OkHttpClient

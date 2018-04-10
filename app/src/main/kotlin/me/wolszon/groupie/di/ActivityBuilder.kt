@@ -2,11 +2,11 @@ package me.wolszon.groupie.di
 
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import me.wolszon.groupie.ui.group.GroupActivity
-import me.wolszon.groupie.ui.group.GroupModule
-import me.wolszon.groupie.ui.group.GroupQrActivity
-import me.wolszon.groupie.ui.landing.LandingActivity
-import me.wolszon.groupie.ui.landing.LandingModule
+import me.wolszon.groupie.android.ui.group.GroupActivity
+import me.wolszon.groupie.android.ui.group.GroupModule
+import me.wolszon.groupie.android.ui.group.GroupQrActivity
+import me.wolszon.groupie.android.ui.landing.LandingActivity
+import me.wolszon.groupie.android.ui.landing.LandingModule
 
 @Module
 abstract class ActivityBuilder {

@@ -1,4 +1,4 @@
-package me.wolszon.groupie.ui.group
+package me.wolszon.groupie.android.ui.group
 
 import android.content.Context
 import android.content.Intent
