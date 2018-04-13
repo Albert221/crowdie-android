@@ -1,11 +1,13 @@
 package me.wolszon.groupie.android.ui.group
 
+import io.reactivex.Observable
 import me.wolszon.groupie.api.models.dataclass.Group
 import me.wolszon.groupie.api.models.dataclass.Member
 import me.wolszon.groupie.api.repository.GroupApi
 import me.wolszon.groupie.base.BasePresenter
 import me.wolszon.groupie.base.Schedulers
 import me.wolszon.groupie.android.ui.Navigator
+import java.util.concurrent.TimeUnit
 
 class GroupPresenter(private val schedulers: Schedulers,
                      private val groupApi: GroupApi,
@@ -14,6 +16,19 @@ class GroupPresenter(private val schedulers: Schedulers,
     lateinit var memberId: String
 
     lateinit var group: Group
+
+    override fun subscribe(view: GroupView) {
+        super.subscribe(view)
+
+        subscribeToGroupUpdates()
+    }
+
+    private fun subscribeToGroupUpdates() {
+        run {
+            Observable.interval(3, 2, TimeUnit.SECONDS)
+                    .subscribe { loadMembers() }
+        }
+    }
 
     // This method is called so frequently, because during
     fun loadMembers() {
