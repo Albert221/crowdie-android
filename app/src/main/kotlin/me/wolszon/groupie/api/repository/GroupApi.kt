@@ -9,7 +9,7 @@ interface GroupApi {
     fun newGroup(creator: MemberRequest): Single<Group>
     fun find(id: String): Single<Group>
     fun addMember(groupId: String, member: MemberRequest): Single<Group>
-    fun updateMemberRole(memberId: String, role: Int): Single<Member>
-    fun sendMemberCoordsBit(memberId: String, lat: Float, lng: Float): Single<Member>
+    fun updateMemberRole(memberId: String, role: Int): Single<Group>
+    fun sendMemberCoordsBit(memberId: String, lat: Float, lng: Float): Single<Group>
     fun kickMember(memberId: String): Single<Group>
 }

@@ -24,7 +24,7 @@ interface GroupRetrofitApi {
     fun updateMemberRole(
             @Path("id") memberId: String,
             @Field("role") role: Int
-    ): Single<MemberResponse>
+    ): Single<GroupResponse>
 
     @FormUrlEncoded
     @PATCH("/member/{id}/coords-bit")
@@ -32,7 +32,7 @@ interface GroupRetrofitApi {
             @Path("id") memberId: String,
             @Field("lat") lat: Float,
             @Field("lng") lng: Float
-    ): Single<MemberResponse>
+    ): Single<GroupResponse>
 
     @DELETE("/member/{id}")
     fun kickMember(@Path("id") memberId: String): Single<GroupResponse>

@@ -1,12 +1,16 @@
 package me.wolszon.groupie.android.ui.group
 
+import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -14,6 +18,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_group.*
 import me.wolszon.groupie.R
+import me.wolszon.groupie.android.services.CoordsTrackerService
 import me.wolszon.groupie.api.models.dataclass.Member
 import me.wolszon.groupie.base.BaseActivity
 import me.wolszon.groupie.prepare
@@ -31,10 +36,13 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
 
     companion object {
         const val EXTRA_GROUP_ID = "GROUP_ID"
+        const val EXTRA_MEMBER_ID = "MEMBER_ID"
+        const val LOCATION_PERMISSION_REQUEST = 1
 
-        fun createIntent(context: Context, groupId: String): Intent {
+        fun createIntent(context: Context, groupId: String, memberId: String): Intent {
             return Intent(context, GroupActivity::class.java).apply {
                 putExtra(EXTRA_GROUP_ID, groupId)
+                putExtra(EXTRA_MEMBER_ID, memberId)
             }
         }
     }
@@ -44,6 +52,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
         setContentView(R.layout.activity_group)
         setSupportActionBar(toolbar)
 
+        // Setup views
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -51,7 +60,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
         membersListAdapter.onMemberClickListener = this::focusMemberOnMap
         membersListAdapter.onMemberPromoteListener = presenter::promoteMember
         membersListAdapter.onMemberSuppressListener = presenter::suppressMember
-        membersListAdapter.onMemberBlockListener= presenter::blockMember
+        membersListAdapter.onMemberBlockListener = presenter::blockMember
         membersList.apply {
             prepare()
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
@@ -59,8 +68,52 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
             adapter = membersListAdapter
         }
 
+        // Presenter stuff
         presenter.groupId = intent.getStringExtra(EXTRA_GROUP_ID)
+        presenter.memberId = intent.getStringExtra(EXTRA_MEMBER_ID)
         presenter.subscribe(this)
+
+        // CoordsTrackerService stuff
+        if (checkLocationPermissions()) {
+            startTrackerService()
+        }
+    }
+
+    private fun checkLocationPermissions(): Boolean {
+        val coarsePermissionCheck = ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_COARSE_LOCATION)
+        val finePermissionCheck = ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_FINE_LOCATION)
+
+        if (coarsePermissionCheck != PackageManager.PERMISSION_GRANTED
+                || finePermissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            ), LOCATION_PERMISSION_REQUEST)
+
+            return false
+        }
+
+        return true
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        if (requestCode != LOCATION_PERMISSION_REQUEST) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            return
+        }
+
+        if (grantResults.size == 2 && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+            startTrackerService()
+        } else {
+            presenter.navigator.openLandingActivity()
+            Toast.makeText(this, "Location permissions has not been granted", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun startTrackerService() {
+        startService(CoordsTrackerService.createIntent(this, presenter.memberId))
     }
 
     override fun onDestroy() {

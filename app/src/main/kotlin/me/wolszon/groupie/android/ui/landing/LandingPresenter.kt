@@ -18,7 +18,7 @@ class LandingPresenter(private val schedulers: Schedulers,
                     .subscribeOn(schedulers.backgroundThread())
                     .observeOn(schedulers.mainThread())
                     .subscribe({
-                        navigator.openGroupActivity(it.id)
+                        navigator.openGroupActivity(it.id, it.members.find { it.isYou() }!!.id)
                     }, { view?.showErrorDialog(it) })
         }
     }
@@ -31,7 +31,7 @@ class LandingPresenter(private val schedulers: Schedulers,
                     .subscribeOn(schedulers.backgroundThread())
                     .observeOn(schedulers.mainThread())
                     .subscribe({
-                        navigator.openGroupActivity(groupId)
+                        navigator.openGroupActivity(groupId, it.members.find { it.isYou() }!!.id)
                     }, { view?.showErrorDialog(it) })
         }
     }

@@ -2,6 +2,8 @@ package me.wolszon.groupie.di
 
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
+import me.wolszon.groupie.android.services.CoordsTrackerModule
+import me.wolszon.groupie.android.services.CoordsTrackerService
 import me.wolszon.groupie.android.ui.group.GroupActivity
 import me.wolszon.groupie.android.ui.group.GroupModule
 import me.wolszon.groupie.android.ui.group.GroupQrActivity
@@ -18,4 +20,7 @@ abstract class ActivityBuilder {
 
     @ContributesAndroidInjector
     abstract fun bindGroupQrActivity(): GroupQrActivity
+
+    @ContributesAndroidInjector(modules = [CoordsTrackerModule::class])
+    abstract fun bindCoordsTrackerService(): CoordsTrackerService
 }

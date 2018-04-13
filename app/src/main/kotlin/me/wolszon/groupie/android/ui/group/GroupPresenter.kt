@@ -9,8 +9,10 @@ import me.wolszon.groupie.android.ui.Navigator
 
 class GroupPresenter(private val schedulers: Schedulers,
                      private val groupApi: GroupApi,
-                     private val navigator: Navigator) : BasePresenter<GroupView>() {
+                     val navigator: Navigator) : BasePresenter<GroupView>() {
     lateinit var groupId: String
+    lateinit var memberId: String
+
     lateinit var group: Group
 
     // This method is called so frequently, because during

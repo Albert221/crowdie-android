@@ -48,6 +48,7 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:$versions.supportLibrary"
     implementation "com.android.support.constraint:constraint-layout:$versions.constraintLayout"
     implementation "com.google.android.gms:play-services-maps:$versions.playServices"
+    implementation "com.google.android.gms:play-services-location:$versions.playServices"
     implementation "com.google.android.gms:play-services-vision:$versions.playServices"
 
     implementation "com.daimajia.swipelayout:library:$versions.swipeLayout@aar"
