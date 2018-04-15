@@ -2,7 +2,9 @@ package me.wolszon.groupie.api.models.dataclass
 
 import com.google.android.gms.maps.model.LatLng
 import me.wolszon.groupie.android.GroupieApplication
-import java.util.*
+import me.wolszon.groupie.api.state.GroupState.currentUser
+import me.wolszon.groupie.utils.Math
+import kotlin.math.roundToInt
 
 data class Member (
         val id: String,
@@ -12,11 +14,11 @@ data class Member (
         val lng: Float,
         val androidId: String
 ) {
-    private var distance = Random().nextInt(15_000)
-
     companion object {
         const val MEMBER = 0
         const val ADMIN = 1
+
+        val distanceCache = hashMapOf<Int, Int>()
     }
 
     fun getLatLng(): LatLng = LatLng(lat.toDouble(), lng.toDouble())
@@ -26,5 +28,24 @@ data class Member (
     /**
      * Returns distanceFromUser from user in meters.
      */
-    fun distanceFromUser(): Int = if (isYou()) 0 else distance
+    fun distanceFromUser(): Int {
+        if (isYou()) {
+            return 0
+        }
+
+        if (distanceCache.containsKey(hashCode())) {
+            return distanceCache[hashCode()]!!
+        }
+
+        val distance = Math.haversine(
+                lat.toDouble(),
+                lng.toDouble(),
+                currentUser.lat.toDouble(),
+                currentUser.lng.toDouble()
+        ).roundToInt()
+
+        distanceCache[hashCode()] = distance
+
+        return distance
+    }
 }
