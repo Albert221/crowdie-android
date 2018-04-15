@@ -23,6 +23,7 @@ import me.wolszon.groupie.api.models.dataclass.Member
 import me.wolszon.groupie.base.BaseActivity
 import me.wolszon.groupie.prepare
 import me.wolszon.groupie.android.ui.adapter.MembersListAdapter
+import me.wolszon.groupie.api.state.GroupState
 import javax.inject.Inject
 
 class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
@@ -35,16 +36,10 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
     private var alreadyLoaded = false
 
     companion object {
-        const val EXTRA_GROUP_ID = "GROUP_ID"
-        const val EXTRA_MEMBER_ID = "MEMBER_ID"
         const val LOCATION_PERMISSION_REQUEST = 1
 
-        fun createIntent(context: Context, groupId: String, memberId: String): Intent {
-            return Intent(context, GroupActivity::class.java).apply {
-                putExtra(EXTRA_GROUP_ID, groupId)
-                putExtra(EXTRA_MEMBER_ID, memberId)
-            }
-        }
+        fun createIntent(context: Context): Intent =
+                Intent(context, GroupActivity::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,9 +63,6 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
             adapter = membersListAdapter
         }
 
-        // Presenter stuff
-        presenter.groupId = intent.getStringExtra(EXTRA_GROUP_ID)
-        presenter.memberId = intent.getStringExtra(EXTRA_MEMBER_ID)
         presenter.subscribe(this)
 
         // CoordsTrackerService stuff
@@ -113,7 +105,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
     }
 
     private fun startTrackerService() {
-        startService(CoordsTrackerService.createIntent(this, presenter.memberId))
+        CoordsTrackerService.start(this)
     }
 
     override fun onDestroy() {
@@ -129,6 +121,14 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.action_qr -> {
             presenter.showQr()
+            true
+        }
+        R.id.action_leave -> {
+            CoordsTrackerService.stop(this)
+            presenter.navigator.openLandingActivity()
+
+            GroupState.destroy()
+
             true
         }
         else -> super.onOptionsItemSelected(item)

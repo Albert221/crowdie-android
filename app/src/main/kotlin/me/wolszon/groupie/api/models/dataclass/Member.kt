@@ -2,7 +2,7 @@ package me.wolszon.groupie.api.models.dataclass
 
 import com.google.android.gms.maps.model.LatLng
 import me.wolszon.groupie.android.GroupieApplication
-import me.wolszon.groupie.api.state.GroupState.currentUser
+import me.wolszon.groupie.api.state.GroupState
 import me.wolszon.groupie.utils.Math
 import kotlin.math.roundToInt
 
@@ -37,6 +37,7 @@ data class Member (
             return distanceCache[hashCode()]!!
         }
 
+        val currentUser = GroupState.currentUser!!
         val distance = Math.haversine(
                 lat.toDouble(),
                 lng.toDouble(),

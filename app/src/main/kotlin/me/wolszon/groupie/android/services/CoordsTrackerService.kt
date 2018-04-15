@@ -2,6 +2,7 @@ package me.wolszon.groupie.android.services
 
 import android.Manifest
 import android.app.Notification
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,6 +14,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import me.wolszon.groupie.android.ui.group.GroupActivity
 import me.wolszon.groupie.base.BaseService
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -23,13 +25,17 @@ class CoordsTrackerService : BaseService(), CoordsTrackerView {
 
     companion object {
         const val NOTIFICATION_CHANNEL = "groupie"
-        const val EXTRA_MEMBER_ID = "MEMBER_ID"
 
-        fun createIntent(context: Context, memberId: String): Intent {
-            return Intent(context, CoordsTrackerService::class.java).apply {
-                putExtra(EXTRA_MEMBER_ID, memberId)
-            }
+        fun start(context: Context) {
+            context.startService(createIntent(context))
         }
+
+        fun stop(context: Context) {
+            context.stopService(createIntent(context))
+        }
+
+        private fun createIntent(context: Context): Intent =
+                Intent(context, CoordsTrackerService::class.java)
     }
 
     override fun onBind(intent: Intent): IBinder? = null
@@ -37,11 +43,16 @@ class CoordsTrackerService : BaseService(), CoordsTrackerView {
     override fun onCreate() {
         super.onCreate()
 
+        val activityPendingIntent = PendingIntent.getActivity(this, 0, GroupActivity.createIntent(this).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        }, 0)
+
         notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL)
                 .setContentTitle("Groupie")
                 .setContentText("Twoja lokalizacja jest przekazywana do grupy")
                 .setSmallIcon(android.R.drawable.ic_dialog_map)
                 .setOngoing(true)
+                .setContentIntent(activityPendingIntent)
                 .build()
 
         val locationRequest = LocationRequest.create()
@@ -65,7 +76,6 @@ class CoordsTrackerService : BaseService(), CoordsTrackerView {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        presenter.memberId = intent.getStringExtra(EXTRA_MEMBER_ID)
         presenter.subscribe(this)
 
         return super.onStartCommand(intent, flags, startId)

@@ -6,6 +6,10 @@
         android:icon="@drawable/qr_code"
         android:title="@string/invite"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_leave"
+        android:title="@string/leave_group"
+        app:showAsAction="never" />
 
     <!--<item
         android:id="@+id/action_settings"
