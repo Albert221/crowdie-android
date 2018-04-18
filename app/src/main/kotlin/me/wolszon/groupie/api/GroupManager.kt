@@ -1,6 +1,5 @@
 package me.wolszon.groupie.api
 
-import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
@@ -18,16 +17,16 @@ interface GroupClient {
     fun update(): Single<Group>
     fun leaveGroup(): Single<Group>
 
-    fun getObservable(): Observable<out Group>
+    fun getGroupObservable(): Observable<out Group>
 }
 
 interface GroupAdmin {
     fun updateRole(memberId: String, role: Int): Single<Group>
     fun kickMember(memberId: String): Single<Group>
 
-    fun getObservable(): Observable<out Group>
+    fun getGroupObservable(): Observable<out Group>
 
-    class NoPermissionsException : Exception()
+    class NoPermissionsException : Exception("You don't have permissions.")
 }
 
 interface GroupManager : GroupClient, GroupAdmin
@@ -77,24 +76,26 @@ class ApiGroupManager(private val preferences: Preferences,
     }
 
     override fun updateRole(memberId: String, role: Int): Single<Group> {
-        throwExceptionWhenNotAnAdmin()
+        if (!isAdmin()) {
+            return Single.error { GroupAdmin.NoPermissionsException() }
+        }
 
         return groupApi.updateMemberRole(memberId, role)
                 .doOnSuccess(subject::onNext)
     }
 
     override fun kickMember(memberId: String): Single<Group> {
-        throwExceptionWhenNotAnAdmin()
-
-        if (memberId == state!!.currentUser.id) {
-//            throw Exception("You cannot kick yourself")
+        if (!isAdmin()) {
+            return Single.error { GroupAdmin.NoPermissionsException() }
+        } else if (memberId == state!!.currentUser.id) {
+            return Single.error { Exception("You cannot kick yourself") }
         }
 
         return groupApi.kickMember(memberId)
                 .doOnSuccess(subject::onNext)
     }
 
-    override fun getObservable(): Observable<out Group> = subject
+    override fun getGroupObservable(): Observable<out Group> = subject
 
     private fun createMemberRequest(): MemberRequest =
             MemberRequest(
@@ -103,11 +104,7 @@ class ApiGroupManager(private val preferences: Preferences,
                     androidId = GroupieApplication.androidId
             )
 
-    private fun throwExceptionWhenNotAnAdmin() {
-        if (state!!.currentUser.role != Member.ADMIN) {
-//            throw GroupAdmin.NoPermissionsException()
-        }
-    }
+    private fun isAdmin() = state?.currentUser?.role == Member.ADMIN
 
     class State(
             val group: Group

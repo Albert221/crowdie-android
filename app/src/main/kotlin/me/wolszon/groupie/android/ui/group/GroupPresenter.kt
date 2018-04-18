@@ -20,7 +20,7 @@ class GroupPresenter(private val groupManager: GroupManager,
 
         run {
             groupManager
-                    .getObservable()
+                    .getGroupObservable()
                     .subscribeOn(schedulers.backgroundThread())
                     .observeOn(schedulers.mainThread())
                     .subscribe({ view.showMembers(it.members) }, { view.showErrorDialog(it) })
