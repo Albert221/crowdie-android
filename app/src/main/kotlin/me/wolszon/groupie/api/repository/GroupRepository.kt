@@ -2,10 +2,8 @@ package me.wolszon.groupie.api.repository
 
 import io.reactivex.Single
 import me.wolszon.groupie.api.mapper.GroupMapper
-import me.wolszon.groupie.api.mapper.MemberMapper
 import me.wolszon.groupie.api.models.apimodels.MemberRequest
 import me.wolszon.groupie.api.models.dataclass.Group
-import me.wolszon.groupie.api.models.dataclass.Member
 import retrofit2.Retrofit
 
 class GroupRepository(private val retrofit: Retrofit) : GroupApi {

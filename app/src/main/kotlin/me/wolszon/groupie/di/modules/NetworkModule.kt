@@ -1,9 +1,12 @@
 package me.wolszon.groupie.di.modules
 
+import android.content.Context
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import me.wolszon.groupie.android.GroupieApplication
+import me.wolszon.groupie.android.AndroidPreferences
+import me.wolszon.groupie.android.Preferences
 import me.wolszon.groupie.base.ApplicationSchedulers
 import me.wolszon.groupie.base.Schedulers
 import okhttp3.OkHttpClient
@@ -18,15 +21,15 @@ import javax.inject.Singleton
 @Module
 class NetworkModule {
     @Provides
-    fun provideApplicationSchedulers() : Schedulers = ApplicationSchedulers()
+    fun provideApplicationSchedulers(): Schedulers = ApplicationSchedulers()
 
     @Provides
     @Singleton
-    fun provideMoshi() = Moshi.Builder().build()
+    fun provideMoshi(): Moshi = Moshi.Builder().build()
 
     @Provides
     @Singleton
-    fun provideRetrofit(client: OkHttpClient, moshi: Moshi) : Retrofit {
+    fun provideRetrofit(client: OkHttpClient, moshi: Moshi): Retrofit {
         return Retrofit.Builder()
                 .client(client)
                 .baseUrl(GroupieApplication.API_BASE_URL)
@@ -45,4 +48,7 @@ class NetworkModule {
                 .writeTimeout(30, TimeUnit.SECONDS)
                 .build()
     }
+
+    @Provides
+    fun providePreferences(context: Context): Preferences = AndroidPreferences(context)
 }

@@ -23,7 +23,6 @@ import me.wolszon.groupie.api.models.dataclass.Member
 import me.wolszon.groupie.base.BaseActivity
 import me.wolszon.groupie.prepare
 import me.wolszon.groupie.android.ui.adapter.MembersListAdapter
-import me.wolszon.groupie.api.state.GroupState
 import javax.inject.Inject
 
 class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
@@ -99,7 +98,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
         if (grantResults.size == 2 && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
             startTrackerService()
         } else {
-            presenter.navigator.openLandingActivity()
+            presenter.leaveGroup()
             Toast.makeText(this, "Location permissions has not been granted", Toast.LENGTH_LONG).show()
         }
     }
@@ -125,10 +124,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
         }
         R.id.action_leave -> {
             CoordsTrackerService.stop(this)
-            presenter.navigator.openLandingActivity()
-
-            GroupState.destroy()
-
+            presenter.leaveGroup()
             true
         }
         else -> super.onOptionsItemSelected(item)

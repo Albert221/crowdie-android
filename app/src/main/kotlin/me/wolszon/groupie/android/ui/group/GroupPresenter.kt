@@ -1,85 +1,57 @@
 package me.wolszon.groupie.android.ui.group
 
 import io.reactivex.Observable
+import io.reactivex.Observer
+import io.reactivex.disposables.Disposable
+import me.wolszon.groupie.android.ui.Navigator
+import me.wolszon.groupie.api.ApiGroupManager
+import me.wolszon.groupie.api.GroupManager
 import me.wolszon.groupie.api.models.dataclass.Group
 import me.wolszon.groupie.api.models.dataclass.Member
-import me.wolszon.groupie.api.repository.GroupApi
 import me.wolszon.groupie.base.BasePresenter
-import me.wolszon.groupie.base.Schedulers
-import me.wolszon.groupie.android.ui.Navigator
-import me.wolszon.groupie.api.state.GroupState
 import java.util.concurrent.TimeUnit
 
-class GroupPresenter(private val schedulers: Schedulers,
-                     private val groupApi: GroupApi,
-                     val navigator: Navigator) : BasePresenter<GroupView>() {
-    private val groupId: String by lazy { GroupState.groupId!! }
-    private lateinit var group: Group
-
+class GroupPresenter(private val groupManager: GroupManager,
+                     private val navigator: Navigator) : BasePresenter<GroupView>() {
     override fun subscribe(view: GroupView) {
         super.subscribe(view)
 
-        subscribeToGroupUpdates()
+        groupManager.subscribe(object : Observer<Group> {
+            override fun onComplete() = Unit
+            override fun onSubscribe(d: Disposable) = Unit
+            override fun onNext(t: Group) = view.showMembers(t.members)
+            override fun onError(e: Throwable) = view.showErrorDialog(e)
+        })
+
+        Observable.interval(3, 2, TimeUnit.SECONDS)
+                .subscribe { groupManager.update() }
     }
 
-    private fun subscribeToGroupUpdates() {
-        run {
-            Observable.interval(3, 2, TimeUnit.SECONDS)
-                    .subscribe { loadMembers() }
-        }
-    }
+    fun loadMembers() = groupManager.update()
 
-    // This method is called so frequently, because during
-    fun loadMembers() {
-        run {
-            groupApi.find(groupId)
-                    .subscribeOn(schedulers.backgroundThread())
-                    .observeOn(schedulers.mainThread())
-                    .subscribe({
-                        group = it
-                        view?.showMembers(it.members)
-                    }, { view?.showErrorDialog(it) })
-        }
-    }
+    fun promoteMember(id: String) = groupManager.updateRole(id, Member.ADMIN)
 
-    fun promoteMember(id: String) {
-        updateMemberRole(id, Member.ADMIN)
-    }
-
-    fun suppressMember(id: String) {
-        updateMemberRole(id, Member.MEMBER)
-    }
-
-    private fun updateMemberRole(id: String, role: Int) {
-        run {
-            groupApi.updateMemberRole(id, role)
-                    .subscribeOn(schedulers.backgroundThread())
-                    .observeOn(schedulers.mainThread())
-                    .subscribe({
-                        loadMembers()
-                    }, { view?.showErrorDialog(it) })
-        }
-    }
+    fun suppressMember(id: String) = groupManager.updateRole(id, Member.MEMBER)
 
     fun blockMember(id: String) {
-        val member = group.members.find { it.id == id }!!
+        groupManager as ApiGroupManager
 
+        val member = groupManager.state!!.group.members.find { it.id == id }!!
         view?.displayMemberBlockConfirmation(member) {
             result ->
             if (!result) return@displayMemberBlockConfirmation
 
-            run {
-                groupApi.kickMember(id)
-                        .subscribeOn(schedulers.backgroundThread())
-                        .observeOn(schedulers.mainThread())
-                        .subscribe({
-                            loadMembers()
-                        }, { view?.showErrorDialog(it) })
-            }
+            groupManager.kickMember(id)
         }
     }
 
+    fun leaveGroup() {
+        groupManager.leaveGroup()
+        navigator.openLandingActivity()
+    }
+
     fun showQr() {
-        navigator.openGroupQrActivity(groupId)
+        groupManager as ApiGroupManager
+        navigator.openGroupQrActivity(groupManager.state!!.groupId)
     }
 }
