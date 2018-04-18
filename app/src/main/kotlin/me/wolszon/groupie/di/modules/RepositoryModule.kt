@@ -9,7 +9,6 @@ import me.wolszon.groupie.api.GroupClient
 import me.wolszon.groupie.api.GroupManager
 import me.wolszon.groupie.api.repository.GroupApi
 import me.wolszon.groupie.api.repository.GroupRepository
-import me.wolszon.groupie.base.Schedulers
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
@@ -26,6 +25,6 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideGroupManager(preferences: Preferences, groupApi: GroupApi, schedulers: Schedulers): GroupManager =
-            ApiGroupManager(preferences, groupApi, schedulers)
+    fun provideGroupManager(preferences: Preferences, groupApi: GroupApi): GroupManager =
+            ApiGroupManager(preferences, groupApi)
 }

@@ -17,6 +17,6 @@ class AndroidPreferences @Inject constructor(context: Context) : Preferences {
     }
 
     override var username: String
-        get() = preferences.getString(PREF_USERNAME, "")
+        get() = preferences.getString(PREF_USERNAME, "No name")
         set(value) = preferences.edit().putString(PREF_USERNAME, value).apply()
 }

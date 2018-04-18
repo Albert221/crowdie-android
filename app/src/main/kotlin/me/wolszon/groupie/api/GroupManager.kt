@@ -1,7 +1,7 @@
 package me.wolszon.groupie.api
 
-import io.reactivex.ObservableSource
-import io.reactivex.Observer
+import android.util.Log
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
 import me.wolszon.groupie.android.GroupieApplication
@@ -10,19 +10,22 @@ import me.wolszon.groupie.api.models.apimodels.MemberRequest
 import me.wolszon.groupie.api.models.dataclass.Group
 import me.wolszon.groupie.api.models.dataclass.Member
 import me.wolszon.groupie.api.repository.GroupApi
-import me.wolszon.groupie.base.Schedulers
 
-interface GroupClient : ObservableSource<Group> {
-    fun newGroup()
-    fun joinGroup(groupId: String)
-    fun sendCoords(lat: Float, lng: Float)
-    fun update()
-    fun leaveGroup()
+interface GroupClient {
+    fun newGroup(): Single<Group>
+    fun joinGroup(groupId: String): Single<Group>
+    fun sendCoords(lat: Float, lng: Float): Single<Group>
+    fun update(): Single<Group>
+    fun leaveGroup(): Single<Group>
+
+    fun getObservable(): Observable<out Group>
 }
 
-interface GroupAdmin : ObservableSource<Group> {
-    fun updateRole(memberId: String, role: Int)
-    fun kickMember(memberId: String)
+interface GroupAdmin {
+    fun updateRole(memberId: String, role: Int): Single<Group>
+    fun kickMember(memberId: String): Single<Group>
+
+    fun getObservable(): Observable<out Group>
 
     class NoPermissionsException : Exception()
 }
@@ -30,8 +33,7 @@ interface GroupAdmin : ObservableSource<Group> {
 interface GroupManager : GroupClient, GroupAdmin
 
 class ApiGroupManager(private val preferences: Preferences,
-                      private val groupApi: GroupApi,
-                      private val schedulers: Schedulers) : GroupManager {
+                      private val groupApi: GroupApi) : GroupManager {
     var state: State? = null
         private set
     private val subject: BehaviorSubject<Group> = BehaviorSubject.create()
@@ -42,56 +44,57 @@ class ApiGroupManager(private val preferences: Preferences,
         }
     }
 
-    override fun newGroup() {
+    override fun newGroup(): Single<Group> {
         val creator = createMemberRequest()
 
-        groupApi.newGroup(creator)
-                .process()
+        return groupApi.newGroup(creator)
+                .doOnSuccess(subject::onNext)
     }
 
-    override fun joinGroup(groupId: String) {
+    override fun joinGroup(groupId: String): Single<Group> {
         val member = createMemberRequest()
 
-        groupApi.addMember(groupId, member)
-                .process()
+        return groupApi.addMember(groupId, member)
+                .doOnSuccess(subject::onNext)
     }
 
-    override fun sendCoords(lat: Float, lng: Float) {
-        groupApi.sendMemberCoordsBit(state!!.currentUser.id, lat, lng)
-                .process()
+    override fun sendCoords(lat: Float, lng: Float): Single<Group> {
+        return groupApi.sendMemberCoordsBit(state!!.currentUser.id, lat, lng)
+                .doOnSuccess(subject::onNext)
     }
 
-    override fun update() {
-        groupApi.find(state!!.groupId)
-                .process()
+    override fun update(): Single<Group> {
+        return groupApi.find(state!!.groupId)
+                .doOnSuccess(subject::onNext)
     }
 
-    override fun leaveGroup() {
-        groupApi.kickMember(state!!.currentUser.id)
-        state = null
+    override fun leaveGroup(): Single<Group> {
+        return groupApi.kickMember(state!!.currentUser.id)
+                .doOnSuccess {
+                    subject.onComplete()
+                    state = null
+                }
     }
 
-    override fun updateRole(memberId: String, role: Int) {
+    override fun updateRole(memberId: String, role: Int): Single<Group> {
         throwExceptionWhenNotAnAdmin()
 
-        groupApi.updateMemberRole(memberId, role)
-                .process()
+        return groupApi.updateMemberRole(memberId, role)
+                .doOnSuccess(subject::onNext)
     }
 
-    override fun kickMember(memberId: String) {
+    override fun kickMember(memberId: String): Single<Group> {
         throwExceptionWhenNotAnAdmin()
 
         if (memberId == state!!.currentUser.id) {
-            throw Exception("You cannot kick yourself")
+//            throw Exception("You cannot kick yourself")
         }
 
-        groupApi.kickMember(memberId)
-                .process()
+        return groupApi.kickMember(memberId)
+                .doOnSuccess(subject::onNext)
     }
 
-    override fun subscribe(observer: Observer<in Group>) {
-        subject.subscribe(observer)
-    }
+    override fun getObservable(): Observable<out Group> = subject
 
     private fun createMemberRequest(): MemberRequest =
             MemberRequest(
@@ -102,15 +105,8 @@ class ApiGroupManager(private val preferences: Preferences,
 
     private fun throwExceptionWhenNotAnAdmin() {
         if (state!!.currentUser.role != Member.ADMIN) {
-            throw GroupAdmin.NoPermissionsException()
+//            throw GroupAdmin.NoPermissionsException()
         }
-    }
-
-    private fun Single<Group>.process() {
-        this
-                .subscribeOn(schedulers.backgroundThread())
-                .observeOn(schedulers.mainThread())
-                .subscribe({ subject.onNext(it) }, { subject.onError(it) })
     }
 
     class State(

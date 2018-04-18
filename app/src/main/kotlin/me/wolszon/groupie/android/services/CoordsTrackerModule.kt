@@ -3,9 +3,11 @@ package me.wolszon.groupie.android.services
 import dagger.Module
 import dagger.Provides
 import me.wolszon.groupie.api.GroupManager
+import me.wolszon.groupie.base.Schedulers
 
 @Module
 class CoordsTrackerModule {
     @Provides
-    fun providePresenter(groupManager: GroupManager) = CoordsTrackerPresenter(groupManager)
+    fun providePresenter(groupManager: GroupManager, schedulers: Schedulers) =
+            CoordsTrackerPresenter(groupManager, schedulers)
 }
