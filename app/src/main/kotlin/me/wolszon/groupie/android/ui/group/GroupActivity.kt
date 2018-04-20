@@ -208,8 +208,8 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
 
     override fun displayMemberBlockConfirmation(member: Member, callback: (Boolean) -> Unit) {
         AlertDialog.Builder(this)
-                .setTitle("Usuwanie członka")
-                .setMessage("Czy na pewno chcesz usunąć ${member.name}?")
+                .setTitle(resources.getString(R.string.kick_member_modal_title))
+                .setMessage(resources.getString(R.string.kick_member_modal_text, member.name))
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.yes) {
                     _, _ ->
