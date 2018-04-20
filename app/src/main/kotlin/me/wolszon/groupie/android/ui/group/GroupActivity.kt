@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.DividerItemDecoration
+import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -23,7 +24,6 @@ import me.wolszon.groupie.api.models.dataclass.Member
 import me.wolszon.groupie.base.BaseActivity
 import me.wolszon.groupie.prepare
 import me.wolszon.groupie.android.ui.adapter.MembersListAdapter
-import me.wolszon.groupie.api.state.GroupState
 import javax.inject.Inject
 
 class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
@@ -31,8 +31,8 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
     @Inject lateinit var membersListAdapter: MembersListAdapter
-
     private val markers = hashMapOf<String, Marker>()
+    private var mapReady = false
     private var alreadyLoaded = false
 
     companion object {
@@ -99,7 +99,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
         if (grantResults.size == 2 && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
             startTrackerService()
         } else {
-            presenter.navigator.openLandingActivity()
+            presenter.leaveGroup()
             Toast.makeText(this, "Location permissions has not been granted", Toast.LENGTH_LONG).show()
         }
     }
@@ -124,11 +124,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
             true
         }
         R.id.action_leave -> {
-            CoordsTrackerService.stop(this)
-            presenter.navigator.openLandingActivity()
-
-            GroupState.destroy()
-
+            presenter.leaveGroup()
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -138,10 +134,16 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
         map = googleMap
         map.uiSettings.isMapToolbarEnabled = false
 
+        mapReady = true
+
         presenter.loadMembers()
     }
 
     override fun showMembers(members: List<Member>) {
+        if (!mapReady) {
+            return
+        }
+
         val markersToDelete = markers.keys.toMutableList()
 
         val boundsBuilder = LatLngBounds.Builder()
@@ -174,27 +176,31 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
 
         membersListAdapter.commitChanges()
 
+        if (markers.size > 0) {
+            // Move map's camera boundaries to have it containing all markers
+            val width = resources.displayMetrics.widthPixels
+            val height = TypedValue
+                    .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics)
+                    .toInt()
+            val padding = (width * 0.12).toInt()
 
-        // Move map's camera boundaries to have it containing all markers
-        val mapPadding = 100
-        if (!alreadyLoaded) {
-            map.moveCamera(CameraUpdateFactory
-                    .newLatLngBounds(boundsBuilder.build(), mapPadding))
-            alreadyLoaded = true
-        } else {
-            // TODO: Determine whether map is centered or moved by user, if it's moved, then don't move camera here.
-            map.animateCamera(CameraUpdateFactory
-                    .newLatLngBounds(boundsBuilder.build(), mapPadding))
+            if (!alreadyLoaded) {
+                map.moveCamera(CameraUpdateFactory
+                        .newLatLngBounds(boundsBuilder.build(), width, height, padding))
+            } else {
+                // TODO: Determine whether map is centered or moved by user, if it's moved, then don't move camera here.
+                map.animateCamera(CameraUpdateFactory
+                        .newLatLngBounds(boundsBuilder.build(), width, height, padding))
+            }
         }
+
+        alreadyLoaded = true
     }
 
     override fun focusMemberOnMap(id: String) {
         markers[id]?.apply {
             map.animateCamera(CameraUpdateFactory.newLatLng(this.position), object : GoogleMap.CancelableCallback {
-                override fun onFinish() {
-                    showInfoWindow()
-                }
-
+                override fun onFinish() = showInfoWindow()
                 override fun onCancel() = Unit
             })
         }
@@ -203,7 +209,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
     override fun displayMemberBlockConfirmation(member: Member, callback: (Boolean) -> Unit) {
         AlertDialog.Builder(this)
                 .setTitle("Usuwanie członka")
-                .setMessage("Czy na pewno chcesz usunąć %s?".format(member.name))
+                .setMessage("Czy na pewno chcesz usunąć ${member.name}?")
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.yes) {
                     _, _ ->

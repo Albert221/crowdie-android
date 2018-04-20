@@ -6,7 +6,9 @@ import dagger.android.support.DaggerAppCompatActivity
 // This class should be extended in all activities in this app. Place global-activity settings here
 // Every activity that extends this class should be defined in ActivityBuilder
 abstract class BaseActivity : DaggerAppCompatActivity() {
-    fun showErrorDialog(e : Throwable) {
+    fun showErrorDialog(e: Throwable) {
+        e.printStackTrace()
+
         AlertDialog.Builder(this)
                 .setTitle("An error has occured.")
                 .setMessage(e.message)

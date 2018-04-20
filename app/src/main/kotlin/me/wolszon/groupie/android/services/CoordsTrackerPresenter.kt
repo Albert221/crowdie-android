@@ -1,27 +1,35 @@
 package me.wolszon.groupie.android.services
 
 import com.google.android.gms.location.LocationResult
-import me.wolszon.groupie.api.repository.GroupApi
-import me.wolszon.groupie.api.state.GroupState
+import me.wolszon.groupie.api.domain.GroupManager
 import me.wolszon.groupie.base.BasePresenter
 import me.wolszon.groupie.base.Schedulers
+import me.wolszon.groupie.utils.CurrentPositionUtil
 
-class CoordsTrackerPresenter(private val schedulers: Schedulers,
-                             private val groupApi: GroupApi) : BasePresenter<CoordsTrackerView>() {
-    private val memberId: String by lazy { GroupState.currentUser!!.id }
+class CoordsTrackerPresenter(private val groupManager: GroupManager,
+                             private val schedulers: Schedulers) : BasePresenter<CoordsTrackerView>() {
+    override fun subscribe(view: CoordsTrackerView) {
+        super.subscribe(view)
+
+        run {
+            groupManager
+                    .getGroupObservable()
+                    .subscribe({}, {}, { view.stopService() })
+        }
+    }
 
     fun sendCoords(location: LocationResult) {
+        val latitude = location.lastLocation.latitude.toFloat()
+        val longitude = location.lastLocation.longitude.toFloat()
+
+        CurrentPositionUtil.latitude = latitude
+        CurrentPositionUtil.longitude = longitude
+
         run {
-            groupApi.sendMemberCoordsBit(
-                    memberId,
-                    location.lastLocation.latitude.toFloat(),
-                    location.lastLocation.longitude.toFloat()
-            )
+            groupManager.sendCoords(latitude, longitude)
                     .subscribeOn(schedulers.backgroundThread())
                     .observeOn(schedulers.mainThread())
-                    .subscribe({
-                        //
-                    }, { view?.showErrorDialog(it) })
+                    .subscribe()
         }
     }
 }

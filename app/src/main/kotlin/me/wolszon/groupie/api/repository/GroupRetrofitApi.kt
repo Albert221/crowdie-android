@@ -3,7 +3,6 @@ package me.wolszon.groupie.api.repository
 import io.reactivex.Single
 import me.wolszon.groupie.api.models.apimodels.MemberRequest
 import me.wolszon.groupie.api.models.apimodels.GroupResponse
-import me.wolszon.groupie.api.models.apimodels.MemberResponse
 import retrofit2.http.*
 
 interface GroupRetrofitApi {
