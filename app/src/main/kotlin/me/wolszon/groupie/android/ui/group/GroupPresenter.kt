@@ -39,9 +39,7 @@ class GroupPresenter(private val groupManager: GroupManager,
     fun suppressMember(id: String) = run { groupManager.updateRole(id, Member.MEMBER).process() }
 
     fun blockMember(id: String) {
-        groupManager as ApiGroupManager
-
-        val member = groupManager.state!!.group.members.find { it.id == id }!!
+        val member = groupManager.getState()!!.group.members.find { it.id == id }!!
         view?.displayMemberBlockConfirmation(member) {
             result ->
             if (!result) return@displayMemberBlockConfirmation
@@ -60,8 +58,7 @@ class GroupPresenter(private val groupManager: GroupManager,
     }
 
     fun showQr() {
-        groupManager as ApiGroupManager
-        navigator.openGroupQrActivity(groupManager.state!!.groupId)
+        navigator.openGroupQrActivity(groupManager.getState()!!.groupId)
     }
 
     private fun Single<Group>.process(): Disposable {

@@ -29,17 +29,27 @@ interface GroupAdmin {
     class NoPermissionsException : Exception("You don't have permissions.")
 }
 
-interface GroupManager : GroupClient, GroupAdmin
+interface GroupManager : GroupClient, GroupAdmin {
+    fun getState(): State?
+
+    data class State(
+            val group: Group
+    ) {
+        val groupId: String
+            get() = group.id
+        val currentUser
+            get() = group.members.find { it.isYou() }!!
+    }
+}
 
 class ApiGroupManager(private val preferences: Preferences,
                       private val groupApi: GroupApi) : GroupManager {
-    var state: State? = null
-        private set
+    private var state: GroupManager.State? = null
     private val subject: BehaviorSubject<Group> = BehaviorSubject.create()
     
     init {
         subject.subscribe {
-            state = State(it)
+            state = GroupManager.State(it)
         }
     }
 
@@ -97,6 +107,8 @@ class ApiGroupManager(private val preferences: Preferences,
 
     override fun getGroupObservable(): Observable<out Group> = subject
 
+    override fun getState(): GroupManager.State? = state?.copy()
+
     private fun createMemberRequest(): MemberRequest =
             MemberRequest(
                     name = preferences.username,
@@ -105,13 +117,4 @@ class ApiGroupManager(private val preferences: Preferences,
             )
 
     private fun isAdmin() = state?.currentUser?.role == Member.ADMIN
-
-    class State(
-            val group: Group
-    ) {
-        val groupId: String
-            get() = group.id
-        val currentUser
-            get() = group.members.find { it.isYou() }!!
-    }
 }
