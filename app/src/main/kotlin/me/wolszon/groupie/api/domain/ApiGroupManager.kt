@@ -1,4 +1,4 @@
-package me.wolszon.groupie.api
+package me.wolszon.groupie.api.domain
 
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -9,38 +9,6 @@ import me.wolszon.groupie.api.models.apimodels.MemberRequest
 import me.wolszon.groupie.api.models.dataclass.Group
 import me.wolszon.groupie.api.models.dataclass.Member
 import me.wolszon.groupie.api.repository.GroupApi
-
-interface GroupClient {
-    fun newGroup(): Single<Group>
-    fun joinGroup(groupId: String): Single<Group>
-    fun sendCoords(lat: Float, lng: Float): Single<Group>
-    fun update(): Single<Group>
-    fun leaveGroup(): Single<Group>
-
-    fun getGroupObservable(): Observable<out Group>
-}
-
-interface GroupAdmin {
-    fun updateRole(memberId: String, role: Int): Single<Group>
-    fun kickMember(memberId: String): Single<Group>
-
-    fun getGroupObservable(): Observable<out Group>
-
-    class NoPermissionsException : Exception("You don't have permissions.")
-}
-
-interface GroupManager : GroupClient, GroupAdmin {
-    fun getState(): State?
-
-    data class State(
-            val group: Group
-    ) {
-        val groupId: String
-            get() = group.id
-        val currentUser
-            get() = group.members.find { it.isYou() }!!
-    }
-}
 
 class ApiGroupManager(private val preferences: Preferences,
                       private val groupApi: GroupApi) : GroupManager {

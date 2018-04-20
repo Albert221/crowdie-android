@@ -4,7 +4,7 @@ import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import me.wolszon.groupie.base.BasePresenter
 import me.wolszon.groupie.android.ui.Navigator
-import me.wolszon.groupie.api.GroupManager
+import me.wolszon.groupie.api.domain.GroupManager
 import me.wolszon.groupie.api.models.dataclass.Group
 import me.wolszon.groupie.base.Schedulers
 

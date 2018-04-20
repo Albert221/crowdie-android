@@ -1,7 +1,7 @@
 package me.wolszon.groupie.android.services
 
 import com.google.android.gms.location.LocationResult
-import me.wolszon.groupie.api.GroupManager
+import me.wolszon.groupie.api.domain.GroupManager
 import me.wolszon.groupie.base.BasePresenter
 import me.wolszon.groupie.base.Schedulers
 import me.wolszon.groupie.utils.CurrentPositionUtil

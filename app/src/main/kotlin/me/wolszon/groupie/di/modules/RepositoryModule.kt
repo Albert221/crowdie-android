@@ -3,10 +3,10 @@ package me.wolszon.groupie.di.modules
 import dagger.Module
 import dagger.Provides
 import me.wolszon.groupie.android.Preferences
-import me.wolszon.groupie.api.ApiGroupManager
-import me.wolszon.groupie.api.GroupAdmin
-import me.wolszon.groupie.api.GroupClient
-import me.wolszon.groupie.api.GroupManager
+import me.wolszon.groupie.api.domain.ApiGroupManager
+import me.wolszon.groupie.api.domain.GroupAdmin
+import me.wolszon.groupie.api.domain.GroupClient
+import me.wolszon.groupie.api.domain.GroupManager
 import me.wolszon.groupie.api.repository.GroupApi
 import me.wolszon.groupie.api.repository.GroupRepository
 import retrofit2.Retrofit
