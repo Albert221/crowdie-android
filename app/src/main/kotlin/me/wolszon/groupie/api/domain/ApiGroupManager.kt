@@ -24,14 +24,22 @@ class ApiGroupManager(private val preferences: Preferences,
         val creator = createMemberRequest()
 
         return groupApi.newGroup(creator)
-                .doOnSuccess(subject::onNext)
+                .doOnSuccess {
+                    preferences.lastJoinedGroup = it.id
+
+                    subject.onNext(it)
+                }
     }
 
     override fun joinGroup(groupId: String): Single<Group> {
         val member = createMemberRequest()
 
         return groupApi.addMember(groupId, member)
-                .doOnSuccess(subject::onNext)
+                .doOnSuccess {
+                    preferences.lastJoinedGroup = it.id
+
+                    subject.onNext(it)
+                }
     }
 
     override fun sendCoords(lat: Float, lng: Float): Single<Group> {
@@ -47,6 +55,8 @@ class ApiGroupManager(private val preferences: Preferences,
     override fun leaveGroup(): Single<Group> {
         return groupApi.kickMember(state!!.currentUser.id)
                 .doOnSuccess {
+                    preferences.lastJoinedGroup = null
+
                     subject.onComplete()
                     state = null
                 }

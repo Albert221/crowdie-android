@@ -56,6 +56,7 @@ class LandingActivity : BaseActivity(), LandingView {
         }
 
         presenter.subscribe(this)
+        presenter.tryJoiningLastGroup()
     }
 
     private fun requestCameraPermission() =
@@ -117,7 +118,7 @@ class LandingActivity : BaseActivity(), LandingView {
     }
 
     override fun promptForUsername() {
-        val dialog = UsernamePromptDialogBuilder(this)
+        UsernamePromptDialogBuilder(this)
                 .setEnterCallback { presenter.setUsername(it); true }
                 .show()
     }

@@ -30,6 +30,17 @@ class LandingPresenter(private val groupManager: GroupManager,
         preferences.username = username
     }
 
+    fun tryJoiningLastGroup() {
+        val lastJoinedGroup = preferences.lastJoinedGroup ?: return
+
+        run {
+            groupManager.joinGroup(lastJoinedGroup)
+                    .subscribeOn(schedulers.backgroundThread())
+                    .observeOn(schedulers.mainThread())
+                    .subscribe({ navigator.openGroupActivity() }, { /* Group not present anymore. */ })
+        }
+    }
+
     private fun Single<Group>.process(): Disposable {
         return this
                 .subscribeOn(schedulers.backgroundThread())
