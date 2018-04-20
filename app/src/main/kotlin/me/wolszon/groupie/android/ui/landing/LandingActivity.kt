@@ -28,7 +28,6 @@ class LandingActivity : BaseActivity(), LandingView {
 
     companion object {
         const val CAMERA_PERMISSION_REQUEST = 1
-        const val BUNDLE_CAMERA_ALREADY_SHOWN = "CAMERA_ALREADY_SHOWN"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,35 +39,23 @@ class LandingActivity : BaseActivity(), LandingView {
             presenter.joinExistingGroup(groupIdText.text.toString())
         }
 
-        if (savedInstanceState?.getBoolean(BUNDLE_CAMERA_ALREADY_SHOWN) == true) {
+        // Show camera on startup when permissions already given or show "tap to camera" text for
+        // requesting camera permission.
+        val permissionCheck = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            // Start camera preview as soon as surface holder is created
             cameraSurface.holder.addCallback(object : SurfaceHolder.Callback {
                 override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) = createCameraSource()
                 override fun surfaceDestroyed(holder: SurfaceHolder?) = Unit
                 override fun surfaceCreated(holder: SurfaceHolder?) = Unit
             })
-        }
-
-        // Camera stuff
-        cameraArea.setOnClickListener {
-            if (!cameraTapText.isVisible) {
-                return@setOnClickListener
-            }
-
-            val permissionCheck = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-                createCameraSource()
-            } else {
+        } else {
+            cameraArea.setOnClickListener {
                 requestCameraPermission()
             }
         }
 
         presenter.subscribe(this)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        outState.putBoolean(BUNDLE_CAMERA_ALREADY_SHOWN, !cameraTapText.isVisible)
     }
 
     private fun requestCameraPermission() =
