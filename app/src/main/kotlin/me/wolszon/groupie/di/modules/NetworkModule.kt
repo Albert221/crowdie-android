@@ -6,7 +6,7 @@ import dagger.Module
 import dagger.Provides
 import me.wolszon.groupie.android.GroupieApplication
 import me.wolszon.groupie.android.AndroidPreferences
-import me.wolszon.groupie.android.Preferences
+import me.wolszon.groupie.api.domain.Preferences
 import me.wolszon.groupie.base.ApplicationSchedulers
 import me.wolszon.groupie.base.Schedulers
 import okhttp3.OkHttpClient

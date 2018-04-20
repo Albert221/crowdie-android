@@ -11,4 +11,7 @@
     <string name="tap_to_use_camera">Tap to use camera</string>
     <string name="you">YOU</string>
     <string name="leave_group">Leave group</string>
+    <string name="no_name">No name</string>
+    <string name="service_notification_text">Sending localization. Click to open group.</string>
+    <string name="location_permission_not_granted">Location permissions has not been granted</string>
 </resources>

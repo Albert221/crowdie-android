@@ -100,7 +100,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
             startTrackerService()
         } else {
             presenter.leaveGroup()
-            Toast.makeText(this, "Location permissions has not been granted", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, resources.getString(R.string.location_permission_not_granted), Toast.LENGTH_LONG).show()
         }
     }
 

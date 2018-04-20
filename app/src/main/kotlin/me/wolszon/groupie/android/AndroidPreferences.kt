@@ -2,13 +2,11 @@ package me.wolszon.groupie.android
 
 import android.content.Context
 import android.content.SharedPreferences
+import me.wolszon.groupie.R
+import me.wolszon.groupie.api.domain.Preferences
 import javax.inject.Inject
 
-interface Preferences {
-    var username: String
-}
-
-class AndroidPreferences @Inject constructor(context: Context) : Preferences {
+class AndroidPreferences @Inject constructor(private val context: Context) : Preferences {
     private var preferences: SharedPreferences =
             context.getSharedPreferences(javaClass.simpleName, Context.MODE_PRIVATE)
 
@@ -17,6 +15,6 @@ class AndroidPreferences @Inject constructor(context: Context) : Preferences {
     }
 
     override var username: String
-        get() = preferences.getString(PREF_USERNAME, "No name")
+        get() = preferences.getString(PREF_USERNAME, context.resources.getString(R.string.no_name))
         set(value) = preferences.edit().putString(PREF_USERNAME, value).apply()
 }

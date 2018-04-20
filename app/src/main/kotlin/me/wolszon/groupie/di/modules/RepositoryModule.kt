@@ -2,7 +2,7 @@ package me.wolszon.groupie.di.modules
 
 import dagger.Module
 import dagger.Provides
-import me.wolszon.groupie.android.Preferences
+import me.wolszon.groupie.api.domain.Preferences
 import me.wolszon.groupie.api.domain.ApiGroupManager
 import me.wolszon.groupie.api.domain.GroupAdmin
 import me.wolszon.groupie.api.domain.GroupClient

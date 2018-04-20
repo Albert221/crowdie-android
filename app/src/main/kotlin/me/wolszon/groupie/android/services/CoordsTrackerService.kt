@@ -12,6 +12,7 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.google.android.gms.location.*
+import me.wolszon.groupie.R
 import me.wolszon.groupie.android.ui.group.GroupActivity
 import me.wolszon.groupie.base.BaseService
 import java.util.concurrent.TimeUnit
@@ -47,8 +48,8 @@ class CoordsTrackerService : BaseService(), CoordsTrackerView {
         }, 0)
 
         notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL)
-                .setContentTitle("Groupie")
-                .setContentText("Sending localization. Click to open group.")
+                .setContentTitle(resources.getString(R.string.app_name))
+                .setContentText(resources.getString(R.string.service_notification_text))
                 .setSmallIcon(android.R.drawable.ic_dialog_map)
                 .setOngoing(true)
                 .setContentIntent(activityPendingIntent)
