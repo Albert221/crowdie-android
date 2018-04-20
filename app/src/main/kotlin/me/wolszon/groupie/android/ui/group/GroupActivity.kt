@@ -22,7 +22,7 @@ import me.wolszon.groupie.R
 import me.wolszon.groupie.android.services.CoordsTrackerService
 import me.wolszon.groupie.api.models.dataclass.Member
 import me.wolszon.groupie.base.BaseActivity
-import me.wolszon.groupie.prepare
+import me.wolszon.groupie.utils.prepare
 import me.wolszon.groupie.android.ui.adapter.MembersListAdapter
 import javax.inject.Inject
 

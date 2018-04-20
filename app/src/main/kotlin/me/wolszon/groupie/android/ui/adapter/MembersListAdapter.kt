@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import me.wolszon.groupie.R
 import me.wolszon.groupie.api.models.dataclass.Member
-import me.wolszon.groupie.inflate
+import me.wolszon.groupie.utils.inflate
 import me.wolszon.groupie.android.ui.adapter.viewholder.MembersListViewHolder
 import javax.inject.Inject
 

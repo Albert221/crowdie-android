@@ -5,7 +5,7 @@ import io.reactivex.disposables.Disposable
 
 // Should be extended by all Presenters.
 open class BasePresenter<T : BaseView> {
-    var compositeObservable = CompositeDisposable()
+    private var compositeObservable = CompositeDisposable()
     var view : T? = null
     val isSubscribed : Boolean
         get() = view != null
@@ -21,7 +21,7 @@ open class BasePresenter<T : BaseView> {
         compositeObservable.dispose()
     }
 
-    fun run(disposable: () -> Disposable) {
+    protected fun run(disposable: () -> Disposable) {
         compositeObservable.add(disposable())
     }
 }

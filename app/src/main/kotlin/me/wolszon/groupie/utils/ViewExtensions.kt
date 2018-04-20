@@ -1,4 +1,4 @@
-package me.wolszon.groupie
+package me.wolszon.groupie.utils
 
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView

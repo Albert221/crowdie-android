@@ -14,7 +14,8 @@ import javax.inject.Singleton
     AppModule::class,
     NetworkModule::class,
     RepositoryModule::class,
-    ActivityBuilder::class])
+    ActivityBuilder::class
+])
 internal interface AppComponent : AndroidInjector<GroupieApplication> {
     @Component.Builder
     abstract class Builder : AndroidInjector.Builder<GroupieApplication>()

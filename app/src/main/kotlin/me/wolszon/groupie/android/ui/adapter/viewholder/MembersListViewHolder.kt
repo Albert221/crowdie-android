@@ -8,7 +8,7 @@ import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.members_list_item.*
 import me.wolszon.groupie.R
 import me.wolszon.groupie.api.models.dataclass.Member
-import me.wolszon.groupie.isVisible
+import me.wolszon.groupie.utils.isVisible
 import me.wolszon.groupie.utils.DistanceFormatter
 
 class MembersListViewHolder(override val containerView: View,

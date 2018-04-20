@@ -16,7 +16,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector
 import kotlinx.android.synthetic.main.activity_landing.*
 import me.wolszon.groupie.R
 import me.wolszon.groupie.base.BaseActivity
-import me.wolszon.groupie.isVisible
+import me.wolszon.groupie.utils.isVisible
 import me.wolszon.groupie.android.ui.landing.vision.BarcodeTrackerFactory
 import javax.inject.Inject
 
