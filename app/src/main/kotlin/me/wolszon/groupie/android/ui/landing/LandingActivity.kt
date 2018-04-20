@@ -74,31 +74,6 @@ class LandingActivity : BaseActivity(), LandingView {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        if (::cameraSource.isInitialized) {
-            startCameraSource()
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        if (::cameraSource.isInitialized) {
-            cameraSource.stop()
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        if (::cameraSource.isInitialized) {
-            cameraSource.release()
-        }
-        presenter.unsubscribe()
-    }
-
     private fun createCameraSource() {
         cameraTapText.isVisible = false
 
@@ -139,5 +114,36 @@ class LandingActivity : BaseActivity(), LandingView {
 
     private fun onBarcodeDetection(barcode: Barcode) {
         presenter.joinExistingGroup(barcode.rawValue)
+    }
+
+    override fun promptForUsername() {
+        val dialog = UsernamePromptDialogBuilder(this)
+                .setEnterCallback { presenter.setUsername(it); true }
+                .show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (::cameraSource.isInitialized) {
+            startCameraSource()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        if (::cameraSource.isInitialized) {
+            cameraSource.stop()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        if (::cameraSource.isInitialized) {
+            cameraSource.release()
+        }
+        presenter.unsubscribe()
     }
 }

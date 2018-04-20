@@ -15,6 +15,6 @@ class AndroidPreferences @Inject constructor(private val context: Context) : Pre
     }
 
     override var username: String
-        get() = preferences.getString(PREF_USERNAME, context.resources.getString(R.string.no_name))
+        get() = preferences.getString(PREF_USERNAME, "")
         set(value) = preferences.edit().putString(PREF_USERNAME, value).apply()
 }
