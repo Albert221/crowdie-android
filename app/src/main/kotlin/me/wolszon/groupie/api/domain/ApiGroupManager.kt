@@ -1,6 +1,5 @@
 package me.wolszon.groupie.api.domain
 
-import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
