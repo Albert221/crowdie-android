@@ -14,7 +14,7 @@ class CoordsTrackerPresenter(private val groupManager: GroupManager,
         run {
             groupManager
                     .getGroupObservable()
-                    .subscribe({}, {}, { view.stopService() })
+                    .subscribe({}, { view.stopService() }, { view.stopService() })
         }
     }
 

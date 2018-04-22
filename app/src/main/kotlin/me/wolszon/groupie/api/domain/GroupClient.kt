@@ -12,4 +12,6 @@ interface GroupClient {
     fun leaveGroup(): Single<Group>
 
     fun getGroupObservable(): Observable<out Group>
+
+    class Kicked : Throwable()
 }

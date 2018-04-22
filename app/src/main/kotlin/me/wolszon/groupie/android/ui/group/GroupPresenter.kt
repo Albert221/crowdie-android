@@ -1,5 +1,6 @@
 package me.wolszon.groupie.android.ui.group
 
+import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
@@ -14,6 +15,10 @@ import java.util.concurrent.TimeUnit
 class GroupPresenter(private val groupManager: GroupManager,
                      private val navigator: Navigator,
                      private val schedulers: Schedulers) : BasePresenter<GroupView>() {
+    companion object {
+        val TAG = GroupPresenter::class.java.simpleName!!
+    }
+
     override fun subscribe(view: GroupView) {
         super.subscribe(view)
 
@@ -22,7 +27,15 @@ class GroupPresenter(private val groupManager: GroupManager,
                     .getGroupObservable()
                     .subscribeOn(schedulers.backgroundThread())
                     .observeOn(schedulers.mainThread())
-                    .subscribe({ view.showMembers(it.members) }, { view.showErrorDialog(it) })
+                    .subscribe({
+                        view.showMembers(it.members)
+                    }, {
+                        // Something's wrong with user, he was probably kicked, let's log it for safety
+                        Log.i(TAG, "User has probably been kicked.", it)
+
+                        view.informAboutBeingKicked()
+                        navigator.openLandingActivity()
+                    })
         }
 
         run {
@@ -64,6 +77,6 @@ class GroupPresenter(private val groupManager: GroupManager,
         return this
                 .subscribeOn(schedulers.backgroundThread())
                 .observeOn(schedulers.mainThread())
-                .subscribe({}, { view?.showErrorDialog(it) })
+                .subscribe({}, { Log.d(TAG, "GroupManager returned error", it) })
     }
 }

@@ -221,4 +221,8 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
                 }
                 .show()
     }
+
+    override fun informAboutBeingKicked() {
+        Toast.makeText(this, "You have been kicked from group.", Toast.LENGTH_LONG).show()
+    }
 }

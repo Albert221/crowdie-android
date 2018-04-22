@@ -1,6 +1,7 @@
 package me.wolszon.groupie.api.domain
 
 import me.wolszon.groupie.api.models.dataclass.Group
+import me.wolszon.groupie.api.models.dataclass.Member
 
 interface GroupManager : GroupClient, GroupAdmin {
     fun getState(): State?
@@ -12,5 +13,7 @@ interface GroupManager : GroupClient, GroupAdmin {
             get() = group.id
         val currentUser
             get() = group.members.find { it.isYou() }!!
+
+        fun isAdmin(): Boolean = currentUser.role == Member.ADMIN
     }
 }
