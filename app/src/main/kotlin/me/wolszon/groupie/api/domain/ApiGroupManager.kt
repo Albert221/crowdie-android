@@ -102,7 +102,6 @@ class ApiGroupManager(private val preferences: Preferences,
                     }
                 }
                 .doOnError {
-                    Log.d("test", "dupa", it)
                     if (it is HttpException && it.code() == 404) {
                         subject.onError(GroupClient.Kicked())
                     }
