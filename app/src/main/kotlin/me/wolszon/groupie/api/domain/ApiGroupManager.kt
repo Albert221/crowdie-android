@@ -45,6 +45,10 @@ class ApiGroupManager(private val preferences: Preferences,
     }
 
     override fun update(): Single<Group> {
+        if (state == null) {
+            return Single.never()
+        }
+
         return groupApi.find(state!!.groupId)
                 .informSubject()
     }

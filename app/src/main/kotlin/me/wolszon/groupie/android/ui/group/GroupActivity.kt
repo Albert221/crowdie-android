@@ -81,7 +81,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
                 || finePermissionCheck != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(
                     Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
+                    Manifest.permission.ACCESS_FINE_LOCATION
             ), LOCATION_PERMISSION_REQUEST)
 
             return false
@@ -96,7 +96,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
             return
         }
 
-        if (grantResults.size == 2 && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+        if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
             startTrackerService()
         } else {
             presenter.leaveGroup()
