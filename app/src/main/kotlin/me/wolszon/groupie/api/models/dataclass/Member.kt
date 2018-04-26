@@ -17,8 +17,6 @@ data class Member (
     companion object {
         const val MEMBER = 0
         const val ADMIN = 1
-
-        val distanceCache = hashMapOf<Int, Int>()
     }
 
     fun getLatLng(): LatLng = LatLng(lat.toDouble(), lng.toDouble())
@@ -33,18 +31,12 @@ data class Member (
             return 0
         }
 
-        if (distanceCache.containsKey(hashCode())) {
-            return distanceCache[hashCode()]!!
-        }
-
         val distance = Math.haversine(
                 lat.toDouble(),
                 lng.toDouble(),
                 CurrentPositionUtil.latitude.toDouble(),
                 CurrentPositionUtil.longitude.toDouble()
         ).roundToInt()
-
-        distanceCache[hashCode()] = distance
 
         return distance
     }
