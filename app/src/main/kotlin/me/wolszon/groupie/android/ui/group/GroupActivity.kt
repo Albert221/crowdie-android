@@ -12,10 +12,7 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_group.*
 import me.wolszon.groupie.R
@@ -24,6 +21,7 @@ import me.wolszon.groupie.api.models.dataclass.Member
 import me.wolszon.groupie.base.BaseActivity
 import me.wolszon.groupie.utils.prepare
 import me.wolszon.groupie.android.ui.adapter.MembersListAdapter
+import me.wolszon.groupie.utils.isVisible
 import javax.inject.Inject
 
 class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
@@ -34,6 +32,9 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
     private val markers = hashMapOf<String, Marker>()
     private var mapReady = false
     private var alreadyLoaded = false
+
+    private lateinit var lastLatLngBounds: LatLngBounds
+    private var mapCentringInterrupted = false
 
     companion object {
         const val LOCATION_PERMISSION_REQUEST = 1
@@ -52,6 +53,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+        centerButton.setOnClickListener { centerMap() }
         membersListAdapter.onMemberClickListener = this::focusMemberOnMap
         membersListAdapter.onMemberPromoteListener = presenter::promoteMember
         membersListAdapter.onMemberSuppressListener = presenter::suppressMember
@@ -133,6 +135,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.uiSettings.isMapToolbarEnabled = false
+        map.setOnCameraMoveListener { interruptMapCentering() }
 
         mapReady = true
 
@@ -178,19 +181,17 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
 
         if (markers.size > 0) {
             // Move map's camera boundaries to have it containing all markers
-            val width = resources.displayMetrics.widthPixels
-            val height = TypedValue
-                    .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics)
-                    .toInt()
-            val padding = (width * 0.12).toInt()
+            lastLatLngBounds = boundsBuilder.build()
 
             if (!alreadyLoaded) {
-                map.moveCamera(CameraUpdateFactory
-                        .newLatLngBounds(boundsBuilder.build(), width, height, padding))
-            } else {
+                map.moveCamera(
+                        paddedLngBoundsCameraUpdate(lastLatLngBounds)
+                )
+            } else if (!mapCentringInterrupted) {
                 // TODO: Determine whether map is centered or moved by user, if it's moved, then don't move camera here.
-                map.animateCamera(CameraUpdateFactory
-                        .newLatLngBounds(boundsBuilder.build(), width, height, padding))
+                map.animateCamera(
+                        paddedLngBoundsCameraUpdate(lastLatLngBounds)
+                )
             }
         }
 
@@ -198,12 +199,39 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
     }
 
     override fun focusMemberOnMap(id: String) {
+        interruptMapCentering()
+
         markers[id]?.apply {
             map.animateCamera(CameraUpdateFactory.newLatLng(this.position), object : GoogleMap.CancelableCallback {
                 override fun onFinish() = showInfoWindow()
                 override fun onCancel() = Unit
             })
         }
+    }
+
+    private fun interruptMapCentering() {
+        mapCentringInterrupted = true
+        centerButton.isVisible = true
+    }
+
+    private fun centerMap() {
+        mapCentringInterrupted = false
+        centerButton.isVisible = false
+
+        map.animateCamera(
+                paddedLngBoundsCameraUpdate(lastLatLngBounds)
+        )
+    }
+
+    private fun paddedLngBoundsCameraUpdate(bounds: LatLngBounds): CameraUpdate {
+        val width = resources.displayMetrics.widthPixels
+        val height = TypedValue
+                .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics)
+                .toInt()
+        val padding = (width * 0.12).toInt()
+
+        return CameraUpdateFactory
+                .newLatLngBounds(bounds, width, height, padding)
     }
 
     override fun displayMemberBlockConfirmation(member: Member, callback: (Boolean) -> Unit) {

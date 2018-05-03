@@ -31,13 +31,11 @@ data class Member (
             return 0
         }
 
-        val distance = Math.haversine(
+        return Math.haversine(
                 lat.toDouble(),
                 lng.toDouble(),
                 CurrentPositionUtil.latitude.toDouble(),
                 CurrentPositionUtil.longitude.toDouble()
         ).roundToInt()
-
-        return distance
     }
 }
