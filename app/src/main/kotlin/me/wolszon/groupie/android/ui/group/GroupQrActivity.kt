@@ -1,11 +1,14 @@
 package me.wolszon.groupie.android.ui.group
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.util.LruCache
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_group_qr.*
 import me.wolszon.groupie.R
 import me.wolszon.groupie.base.BaseActivity
@@ -29,7 +32,16 @@ class GroupQrActivity : BaseActivity() {
         setContentView(R.layout.activity_group_qr)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        id.text = groupId
+        id.apply {
+            text = groupId
+            setOnClickListener {
+                val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                clipboardManager.primaryClip = ClipData.newPlainText("Group id", groupId)
+
+                Toast.makeText(this@GroupQrActivity, "Group id has been copied", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         qr.setImageBitmap(getCachedQrBitmap(groupId))
     }
 
