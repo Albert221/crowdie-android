@@ -4,6 +4,7 @@ import android.content.Context
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
+import me.wolszon.groupie.BuildConfig
 import me.wolszon.groupie.android.GroupieApplication
 import me.wolszon.groupie.android.AndroidPreferences
 import me.wolszon.groupie.api.UserTokenInterceptor
@@ -31,9 +32,15 @@ class NetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(client: OkHttpClient, moshi: Moshi): Retrofit {
+        val apiBaseUrl = when (BuildConfig.BUILD_TYPE) {
+            "release" -> ""
+            "staging" -> "http://139.59.147.215:8080"
+            /* "debug", */ else -> "http://192.168.1.30:8080"
+        }
+
         return Retrofit.Builder()
                 .client(client)
-                .baseUrl(GroupieApplication.API_BASE_URL)
+                .baseUrl(apiBaseUrl)
                 .addConverterFactory(MoshiConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()

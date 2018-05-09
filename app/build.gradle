@@ -16,6 +16,7 @@ androidExtensions {
 android {
     compileSdkVersion 27
     buildToolsVersion versions.buildTools
+
     defaultConfig {
         applicationId "me.wolszon.groupie"
         minSdkVersion 16
@@ -23,9 +24,18 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
+        debug {
+            debuggable true
+        }
+
+        staging {
+            initWith debug
+        }
+
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
