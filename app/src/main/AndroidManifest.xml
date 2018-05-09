@@ -20,7 +20,10 @@
             android:name=".android.services.CoordsTrackerService"
             android:enabled="true" />
 
-        <activity android:name=".android.ui.landing.LandingActivity">
+        <activity
+            android:name=".android.ui.landing.LandingActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -32,8 +35,7 @@
             android:name=".android.ui.group.GroupActivity"
             android:label="@string/your_group"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <activity
             android:name=".android.ui.group.GroupQrActivity"

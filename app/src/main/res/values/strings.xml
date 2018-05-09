@@ -17,4 +17,5 @@
     <string name="kick_member_modal_text">Do you really want to kick %1$s?</string>
     <string name="username_prompt_title">Enter username</string>
     <string name="username_prompt_input_hint">John Doe</string>
+    <string name="change_username">Change username</string>
 </resources>

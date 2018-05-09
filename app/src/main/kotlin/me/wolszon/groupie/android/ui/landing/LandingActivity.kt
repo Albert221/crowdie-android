@@ -6,6 +6,8 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
+import android.view.Menu
+import android.view.MenuItem
 import android.view.SurfaceHolder
 import android.widget.Toast
 import com.google.android.gms.vision.CameraSource
@@ -33,6 +35,7 @@ class LandingActivity : BaseActivity(), LandingView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_landing)
+        setSupportActionBar(toolbar)
 
         createGroupButton.setOnClickListener { presenter.createGroup() }
         joinGroupButton.setOnClickListener {
@@ -115,6 +118,23 @@ class LandingActivity : BaseActivity(), LandingView {
 
     private fun onBarcodeDetection(barcode: Barcode) {
         presenter.joinExistingGroup(barcode.rawValue)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.landing_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_change_username -> {
+            UsernamePromptDialogBuilder(this)
+                    .setEnterCallback { presenter.setUsername(it); true }
+                    .setDismissible(true)
+                    .show()
+            true
+        }
+
+        else -> super.onOptionsItemSelected(item)
     }
 
     override fun promptForUsername() {

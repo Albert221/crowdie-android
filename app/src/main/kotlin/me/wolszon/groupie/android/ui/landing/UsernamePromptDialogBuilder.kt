@@ -6,6 +6,7 @@ import me.wolszon.groupie.R
 
 class UsernamePromptDialogBuilder(context: Context) : MaterialDialog.Builder(context) {
     private lateinit var enterCallback: (String) -> Boolean
+    private var dismissible: Boolean = false
     private var valid = false
 
     init {
@@ -28,10 +29,16 @@ class UsernamePromptDialogBuilder(context: Context) : MaterialDialog.Builder(con
         })
 
         dismissListener {
-            if (!valid) {
+            if (!dismissible && !valid) {
                 this.show()
             }
         }
+    }
+
+    fun setDismissible(dismissible: Boolean): UsernamePromptDialogBuilder {
+        this.dismissible = dismissible
+        canceledOnTouchOutside = dismissible
+        return this
     }
 
     fun setEnterCallback(enterCallback: (String) -> Boolean): UsernamePromptDialogBuilder {
