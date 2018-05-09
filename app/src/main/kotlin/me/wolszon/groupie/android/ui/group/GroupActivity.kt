@@ -35,6 +35,7 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
 
     private lateinit var lastLatLngBounds: LatLngBounds
     private var mapCentringInterrupted = false
+    private var mapDuringMoving = false
 
     companion object {
         const val LOCATION_PERMISSION_REQUEST = 1
@@ -135,7 +136,13 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.uiSettings.isMapToolbarEnabled = false
-        map.setOnCameraMoveListener { interruptMapCentering() }
+        map.setOnCameraMoveListener {
+            synchronized(mapDuringMoving) {
+                if (!mapDuringMoving) {
+                    interruptMapCentering()
+                }
+            }
+        }
 
         mapReady = true
 
@@ -188,9 +195,13 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
                         paddedLngBoundsCameraUpdate(lastLatLngBounds)
                 )
             } else if (!mapCentringInterrupted) {
-                // TODO: Determine whether map is centered or moved by user, if it's moved, then don't move camera here.
+                mapDuringMoving = true
                 map.animateCamera(
-                        paddedLngBoundsCameraUpdate(lastLatLngBounds)
+                        paddedLngBoundsCameraUpdate(lastLatLngBounds),
+                        object : GoogleMap.CancelableCallback {
+                            override fun onFinish() { synchronized(mapDuringMoving) { mapDuringMoving = false } }
+                            override fun onCancel() = interruptMapCentering()
+                        }
                 )
             }
         }
@@ -199,27 +210,44 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
     }
 
     override fun focusMemberOnMap(id: String) {
-        interruptMapCentering()
-
         markers[id]?.apply {
-            map.animateCamera(CameraUpdateFactory.newLatLng(this.position), object : GoogleMap.CancelableCallback {
-                override fun onFinish() = showInfoWindow()
-                override fun onCancel() = Unit
-            })
+            if (markers.size == 1 && !mapCentringInterrupted) {
+                // If map is already centered on the center of all members (on the only one),
+                // we do not need to move camera.
+                showInfoWindow()
+                return@apply
+            }
+
+            interruptMapCentering()
+
+            map.animateCamera(
+                    CameraUpdateFactory.newLatLng(this.position),
+                    object : GoogleMap.CancelableCallback {
+                        override fun onFinish() = showInfoWindow()
+                        override fun onCancel() = Unit
+                    }
+            )
         }
     }
 
     private fun interruptMapCentering() {
-        mapCentringInterrupted = true
         centerButton.isVisible = true
+
+        mapCentringInterrupted = true
+        mapDuringMoving = false
     }
 
     private fun centerMap() {
-        mapCentringInterrupted = false
         centerButton.isVisible = false
 
+        mapCentringInterrupted = false
+        mapDuringMoving = true
         map.animateCamera(
-                paddedLngBoundsCameraUpdate(lastLatLngBounds)
+                paddedLngBoundsCameraUpdate(lastLatLngBounds),
+                object : GoogleMap.CancelableCallback {
+                    override fun onFinish() { synchronized(mapDuringMoving) { mapDuringMoving = false } }
+                    override fun onCancel() = interruptMapCentering()
+                }
         )
     }
 
