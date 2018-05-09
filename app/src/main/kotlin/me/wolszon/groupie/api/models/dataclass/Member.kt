@@ -1,7 +1,7 @@
 package me.wolszon.groupie.api.models.dataclass
 
 import com.google.android.gms.maps.model.LatLng
-import me.wolszon.groupie.android.GroupieApplication
+import me.wolszon.groupie.api.domain.GroupManager
 import me.wolszon.groupie.utils.CurrentPositionUtil
 import me.wolszon.groupie.utils.Math
 import kotlin.math.roundToInt
@@ -11,8 +11,7 @@ data class Member (
         val name: String,
         val role: Int,
         val lat: Float,
-        val lng: Float,
-        val androidId: String
+        val lng: Float
 ) {
     companion object {
         const val MEMBER = 0
@@ -21,7 +20,7 @@ data class Member (
 
     fun getLatLng(): LatLng = LatLng(lat.toDouble(), lng.toDouble())
 
-    fun isYou(): Boolean = androidId == GroupieApplication.androidId
+    fun isYou(): Boolean = id == GroupManager.state!!.currentMemberId
 
     /**
      * Returns distanceFromUser from user in meters.

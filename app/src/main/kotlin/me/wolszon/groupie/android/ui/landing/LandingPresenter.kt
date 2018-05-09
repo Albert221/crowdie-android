@@ -21,10 +21,11 @@ class LandingPresenter(private val groupManager: GroupManager,
         }
     }
 
-    fun createGroup() = run { groupManager.newGroup().process() }
-    fun joinExistingGroup(groupId: String) = run { groupManager.joinGroup(groupId).process() }
-
     private fun checkUsernameSet(): Boolean = preferences.username.isNotEmpty()
+
+    fun createGroup() = run { groupManager.newGroup().process() }
+
+    fun joinExistingGroup(groupId: String) = run { groupManager.joinGroup(groupId).process() }
 
     fun setUsername(username: String) {
         preferences.username = username

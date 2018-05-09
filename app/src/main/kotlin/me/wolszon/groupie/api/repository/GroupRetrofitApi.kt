@@ -1,38 +1,39 @@
 package me.wolszon.groupie.api.repository
 
 import io.reactivex.Single
+import me.wolszon.groupie.api.models.apimodels.CreatedResponse
 import me.wolszon.groupie.api.models.apimodels.MemberRequest
 import me.wolszon.groupie.api.models.apimodels.GroupResponse
 import retrofit2.http.*
 
 interface GroupRetrofitApi {
-    @POST("/group")
-    fun newGroup(@Body creator: MemberRequest): Single<GroupResponse>
+    @POST("/api/v1/group")
+    fun newGroup(@Body creator: MemberRequest): Single<CreatedResponse>
 
-    @GET("/group/{id}")
+    @GET("/api/v1/group/{id}")
     fun findGroup(@Path("id") id: String): Single<GroupResponse>
 
-    @POST("/group/{id}/member")
+    @POST("/api/v1/group/{id}/member")
     fun addMember(
             @Path("id") groupId: String,
             @Body member: MemberRequest
-    ): Single<GroupResponse>
+    ): Single<CreatedResponse>
 
     @FormUrlEncoded
-    @PATCH("/member/{id}/role")
+    @PATCH("/api/v1/member/{id}/role")
     fun updateMemberRole(
             @Path("id") memberId: String,
             @Field("role") role: Int
     ): Single<GroupResponse>
 
     @FormUrlEncoded
-    @PATCH("/member/{id}/coords-bit")
+    @PATCH("/api/v1/member/{id}/coords-bit")
     fun sendMemberCoordsBit(
             @Path("id") memberId: String,
             @Field("lat") lat: Float,
             @Field("lng") lng: Float
     ): Single<GroupResponse>
 
-    @DELETE("/member/{id}")
+    @DELETE("/api/v1/member/{id}")
     fun kickMember(@Path("id") memberId: String): Single<GroupResponse>
 }

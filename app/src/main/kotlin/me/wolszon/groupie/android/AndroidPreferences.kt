@@ -12,6 +12,8 @@ class AndroidPreferences @Inject constructor(context: Context) : Preferences {
     companion object {
         private const val PREF_USERNAME = "username"
         private const val PREF_LAST_JOINED_GROUP = "last_joined_group"
+        private const val PREF_LAST_JOINED_GROUP_TOKEN = "last_joined_group_token"
+        private const val PREF_LAST_JOINED_GROUP_MEMBER_ID = "last_joined_group_member_id"
     }
 
     override var username: String
@@ -21,4 +23,12 @@ class AndroidPreferences @Inject constructor(context: Context) : Preferences {
     override var lastJoinedGroup: String?
         get() = preferences.getString(PREF_LAST_JOINED_GROUP, null)
         set(value) = preferences.edit().putString(PREF_LAST_JOINED_GROUP, value).apply()
+
+    override var lastJoinedGroupToken: String?
+        get() = preferences.getString(PREF_LAST_JOINED_GROUP_TOKEN, null)
+        set(value) = preferences.edit().putString(PREF_LAST_JOINED_GROUP_TOKEN, value).apply()
+
+    override var lastJoinedGroupMemberId: String?
+        get() = preferences.getString(PREF_LAST_JOINED_GROUP_MEMBER_ID, null)
+        set(value) = preferences.edit().putString(PREF_LAST_JOINED_GROUP_MEMBER_ID, value).apply()
 }

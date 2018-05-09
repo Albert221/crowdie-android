@@ -20,7 +20,5 @@ interface GroupClient {
      *           kicked from the group.
      *         - Complete is when user decided to leave group.
      */
-    fun getGroupObservable(): Observable<out Group>
-
-    class Kicked : Throwable()
+    fun getGroupObservable(): Observable<out StateFeed>
 }

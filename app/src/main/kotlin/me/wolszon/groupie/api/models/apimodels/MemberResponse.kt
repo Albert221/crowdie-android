@@ -10,7 +10,5 @@ data class MemberResponse (
     @Json(name = "role")
     var role: Int,
     @Json(name = "coordsBit")
-    var coordsBit: CoordsBitResponse,
-    @Json(name = "androidId")
-    var androidId: String
+    var coordsBit: CoordsBitResponse
 )

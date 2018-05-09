@@ -10,8 +10,7 @@ class MemberMapper {
                 name = value.name,
                 role = value.role,
                 lat = value.coordsBit.lat,
-                lng = value.coordsBit.lng,
-                androidId = value.androidId
+                lng = value.coordsBit.lng
         )
     }
 }

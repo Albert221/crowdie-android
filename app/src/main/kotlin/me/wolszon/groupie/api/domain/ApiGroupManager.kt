@@ -4,83 +4,129 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
 import me.wolszon.groupie.android.GroupieApplication
+import me.wolszon.groupie.api.mapper.CreatedMapper
+import me.wolszon.groupie.api.mapper.GroupMapper
+import me.wolszon.groupie.api.models.apimodels.CreatedResponse
+import me.wolszon.groupie.api.models.apimodels.GroupResponse
 import me.wolszon.groupie.api.models.apimodels.MemberRequest
 import me.wolszon.groupie.api.models.dataclass.Group
-import me.wolszon.groupie.api.repository.GroupApi
+import me.wolszon.groupie.api.repository.GroupRetrofitApi
 import retrofit2.HttpException
+import retrofit2.Retrofit
 
 class ApiGroupManager(private val preferences: Preferences,
-                      private val groupApi: GroupApi) : GroupManager {
-    private var state: GroupManager.State? = null
-    private val subject: BehaviorSubject<Group> = BehaviorSubject.create()
+                      private val retrofit: Retrofit) : GroupManager {
+    private val groupApi by lazy { retrofit.create(GroupRetrofitApi::class.java) }
+    private val subject: BehaviorSubject<StateFeed> = BehaviorSubject.create()
 
     init {
         subject.subscribe({
-            preferences.lastJoinedGroup = it.id
-            state = GroupManager.State(it)
-        }, { destroyState() }, { destroyState() })
+            if (it.event == StateFeed.Event.UPDATE) {
+                GroupManager.state!!.group = it.updatedGroup!!
+            } else if (it.event in listOf(StateFeed.Event.KICK,
+                                              StateFeed.Event.LEAVE)) {
+                destroyState()
+            }
+        }, { destroyState() })
     }
 
     override fun newGroup(): Single<Group> {
         val creator = createMemberRequest()
 
         return groupApi.newGroup(creator)
+                .map(createdPersistingMapper)
                 .informSubject()
     }
 
     override fun joinGroup(groupId: String): Single<Group> {
-        val member = createMemberRequest()
+        return groupApi.findGroup(groupId)
+                .map(joinedPersistingMapper)
+                .onErrorResumeNext {
+                    if (it !is HttpException) {
+                        throw it
+                    }
 
-        return groupApi.addMember(groupId, member)
+                    val member = createMemberRequest()
+                    return@onErrorResumeNext groupApi.addMember(groupId, member)
+                            .map(createdPersistingMapper)
+                            .informSubject()
+                }
                 .informSubject()
     }
 
+    private val joinedPersistingMapper: (GroupResponse) -> Group = {
+        val group = GroupMapper.map(it)
+
+        GroupManager.state = GroupManager.State(
+                group,
+                preferences.lastJoinedGroupToken!!,
+                preferences.lastJoinedGroupMemberId!!
+        )
+
+        group
+    }
+
+    private val createdPersistingMapper: (CreatedResponse) -> Group = {
+        val group = CreatedMapper.map(it)
+
+        preferences.lastJoinedGroup = group.id
+        preferences.lastJoinedGroupToken = it.token
+        preferences.lastJoinedGroupMemberId = it.yourId
+
+        GroupManager.state = GroupManager.State(group, it.token, it.yourId)
+
+        group
+    }
+
     override fun sendCoords(lat: Float, lng: Float): Single<Group> {
-        if (state == null) {
+        if (GroupManager.state == null) {
             return Single.never()
         }
 
-        return groupApi.sendMemberCoordsBit(state!!.currentUser.id, lat, lng)
+        return groupApi.sendMemberCoordsBit(GroupManager.state!!.getCurrentUser().id, lat, lng)
+                .map { GroupMapper.map(it) }
                 .informSubject()
     }
 
     override fun update(): Single<Group> {
-        if (state == null) {
+        if (GroupManager.state == null) {
             return Single.never()
         }
 
-        return groupApi.find(state!!.groupId)
+        return groupApi.findGroup(GroupManager.state!!.getGroupId())
+                .map { GroupMapper.map(it) }
                 .informSubject()
     }
 
     override fun leaveGroup(): Single<Group> {
-        return groupApi.kickMember(state!!.currentUser.id)
-                .doOnSuccess { subject.onComplete() }
+        return groupApi.kickMember(GroupManager.state!!.getCurrentUser().id)
+                .map { GroupMapper.map(it) }
+                .doOnSuccess { subject.onNext(StateFeed.leave()) }
     }
 
     override fun updateRole(memberId: String, role: Int): Single<Group> {
-        if (state?.isAdmin() != true) {
+        if (GroupManager.state?.isAdmin() != true) {
             return Single.error { GroupAdmin.NoPermissionsException() }
         }
 
         return groupApi.updateMemberRole(memberId, role)
+                .map { GroupMapper.map(it) }
                 .informSubject()
     }
 
     override fun kickMember(memberId: String): Single<Group> {
-        if (state?.isAdmin() != true) {
+        if (GroupManager.state?.isAdmin() != true) {
             return Single.error { GroupAdmin.NoPermissionsException() }
-        } else if (memberId == state!!.currentUser.id) {
+        } else if (memberId == GroupManager.state!!.getCurrentUser().id) {
             return Single.error { Exception("You cannot kick yourself") }
         }
 
         return groupApi.kickMember(memberId)
+                .map { GroupMapper.map(it) }
                 .informSubject()
     }
 
-    override fun getGroupObservable(): Observable<out Group> = subject
-
-    override fun getState(): GroupManager.State? = state?.copy()
+    override fun getGroupObservable(): Observable<out StateFeed> = subject
 
     private fun createMemberRequest(): MemberRequest =
             MemberRequest(
@@ -91,7 +137,10 @@ class ApiGroupManager(private val preferences: Preferences,
 
     private fun destroyState() {
         preferences.lastJoinedGroup = null
-        state = null
+        preferences.lastJoinedGroupToken = null
+        preferences.lastJoinedGroupMemberId = null
+
+        GroupManager.state = null
     }
 
     private fun Single<Group>.informSubject(): Single<Group> {
@@ -99,14 +148,20 @@ class ApiGroupManager(private val preferences: Preferences,
                 .doOnSuccess {
                     if (it.members.find { it.isYou() } == null) {
                         // User is not present in members list, he's kicked.
-                        subject.onError(GroupClient.Kicked())
+                        subject.onNext(
+                                StateFeed.kick()
+                        )
                     } else {
-                        subject.onNext(it)
+                        subject.onNext(
+                                StateFeed.update(it)
+                        )
                     }
                 }
                 .doOnError {
                     if (it is HttpException && it.code() == 404) {
-                        subject.onError(GroupClient.Kicked())
+                        subject.onNext(
+                                StateFeed.kick()
+                        )
                     }
                 }
     }

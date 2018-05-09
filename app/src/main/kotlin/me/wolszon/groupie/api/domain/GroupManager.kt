@@ -4,16 +4,19 @@ import me.wolszon.groupie.api.models.dataclass.Group
 import me.wolszon.groupie.api.models.dataclass.Member
 
 interface GroupManager : GroupClient, GroupAdmin {
-    fun getState(): State?
+    companion object {
+         var state: State? = null
+    }
 
     data class State(
-            val group: Group
+            var group: Group,
+            var token: String,
+            var currentMemberId: String
     ) {
-        val groupId: String
-            get() = group.id
-        val currentUser
-            get() = group.members.find { it.isYou() }!!
+        fun getGroupId(): String = group.id
 
-        fun isAdmin(): Boolean = currentUser.role == Member.ADMIN
+        fun getCurrentUser(): Member = group.members.find { it.isYou() }!!
+
+        fun isAdmin(): Boolean = getCurrentUser().role == Member.ADMIN
     }
 }

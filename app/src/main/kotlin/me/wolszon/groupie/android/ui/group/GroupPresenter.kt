@@ -6,6 +6,7 @@ import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import me.wolszon.groupie.android.ui.Navigator
 import me.wolszon.groupie.api.domain.GroupManager
+import me.wolszon.groupie.api.domain.StateFeed
 import me.wolszon.groupie.api.models.dataclass.Group
 import me.wolszon.groupie.api.models.dataclass.Member
 import me.wolszon.groupie.base.BasePresenter
@@ -27,15 +28,22 @@ class GroupPresenter(private val groupManager: GroupManager,
                     .getGroupObservable()
                     .subscribeOn(schedulers.backgroundThread())
                     .observeOn(schedulers.mainThread())
-                    .subscribe({
-                        view.showMembers(it.members)
-                    }, {
-                        // Something's wrong with user, he was probably kicked, let's log it for safety
-                        Log.i(TAG, "User has probably been kicked.", it)
+                    .subscribe {
+                        when (it.event) {
+                            StateFeed.Event.UPDATE -> {
+                                view.showMembers(it.updatedGroup!!.members)
+                            }
 
-                        view.informAboutBeingKicked()
-                        navigator.openLandingActivity()
-                    })
+                            StateFeed.Event.KICK -> {
+                                Log.i(TAG, "User has probably been kicked.")
+
+                                view.informAboutBeingKicked()
+                                navigator.openLandingActivity()
+                            }
+
+                            else -> Unit
+                        }
+                    }
         }
 
         run {
@@ -51,7 +59,7 @@ class GroupPresenter(private val groupManager: GroupManager,
     fun suppressMember(id: String) = run { groupManager.updateRole(id, Member.MEMBER).process() }
 
     fun blockMember(id: String) {
-        val member = groupManager.getState()!!.group.members.find { it.id == id }!!
+        val member = GroupManager.state!!.group.members.find { it.id == id }!!
         view?.displayMemberBlockConfirmation(member) {
             result ->
             if (!result) return@displayMemberBlockConfirmation
@@ -70,7 +78,7 @@ class GroupPresenter(private val groupManager: GroupManager,
     }
 
     fun showQr() {
-        navigator.openGroupQrActivity(groupManager.getState()!!.groupId)
+        navigator.openGroupQrActivity(GroupManager.state!!.getGroupId())
     }
 
     private fun Single<Group>.process(): Disposable {

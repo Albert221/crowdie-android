@@ -2,6 +2,7 @@ package me.wolszon.groupie.android.services
 
 import com.google.android.gms.location.LocationResult
 import me.wolszon.groupie.api.domain.GroupManager
+import me.wolszon.groupie.api.domain.StateFeed
 import me.wolszon.groupie.base.BasePresenter
 import me.wolszon.groupie.base.Schedulers
 import me.wolszon.groupie.utils.CurrentPositionUtil
@@ -14,7 +15,16 @@ class CoordsTrackerPresenter(private val groupManager: GroupManager,
         run {
             groupManager
                     .getGroupObservable()
-                    .subscribe({}, { view.stopService() }, { view.stopService() })
+                    .subscribe {
+                        when(it.event) {
+                            StateFeed.Event.KICK,
+                            StateFeed.Event.LEAVE -> {
+                                view.stopService()
+                            }
+
+                            else -> Unit
+                        }
+                    }
         }
     }
 

@@ -9,7 +9,7 @@ import me.wolszon.groupie.di.DaggerAppComponent
 class GroupieApplication : DaggerApplication() {
     companion object {
         // DigitalOcean API server
-        const val API_BASE_URL = "http://139.59.147.215:8080"
+        const val API_BASE_URL = "http://192.168.1.30:8080"
         lateinit var androidId: String
     }
 

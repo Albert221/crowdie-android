@@ -6,6 +6,7 @@ import dagger.Module
 import dagger.Provides
 import me.wolszon.groupie.android.GroupieApplication
 import me.wolszon.groupie.android.AndroidPreferences
+import me.wolszon.groupie.api.UserTokenInterceptor
 import me.wolszon.groupie.api.domain.Preferences
 import me.wolszon.groupie.base.ApplicationSchedulers
 import me.wolszon.groupie.base.Schedulers
@@ -40,9 +41,10 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(preferences: Preferences): OkHttpClient {
         return OkHttpClient.Builder()
-                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
+                .addInterceptor(UserTokenInterceptor(preferences))
+                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
