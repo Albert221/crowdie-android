@@ -3,7 +3,6 @@ package me.wolszon.groupie.android.services
 import android.Manifest
 import android.app.Notification
 import android.app.PendingIntent
-import android.content.ContentProvider
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,6 +11,7 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.google.android.gms.location.*
+import com.google.android.gms.location.LocationCallback as GoogleLocationCallback
 import me.wolszon.groupie.R
 import me.wolszon.groupie.android.ui.group.GroupActivity
 import me.wolszon.groupie.base.BaseService
@@ -22,6 +22,7 @@ class CoordsTrackerService : BaseService(), CoordsTrackerView {
     @Inject lateinit var presenter: CoordsTrackerPresenter
     private lateinit var notification: Notification
     private lateinit var locationProvider: FusedLocationProviderClient
+    private val locationCallback: GoogleLocationCallback by lazy { LocationCallback() }
 
     companion object {
         const val NOTIFICATION_CHANNEL = "groupie"
@@ -64,7 +65,7 @@ class CoordsTrackerService : BaseService(), CoordsTrackerView {
             return
         }
 
-        locationProvider.requestLocationUpdates(locationRequest, LocationCallback(), null)
+        locationProvider.requestLocationUpdates(locationRequest, locationCallback, null)
 
         startForeground(1, notification)
     }
@@ -78,7 +79,7 @@ class CoordsTrackerService : BaseService(), CoordsTrackerView {
     override fun onDestroy() {
         super.onDestroy()
 
-        locationProvider.removeLocationUpdates(LocationCallback())
+        locationProvider.removeLocationUpdates(locationCallback)
         presenter.unsubscribe()
     }
 
@@ -90,7 +91,7 @@ class CoordsTrackerService : BaseService(), CoordsTrackerView {
         Log.e("COORDS", e.toString())
     }
 
-    private inner class LocationCallback : com.google.android.gms.location.LocationCallback() {
+    private inner class LocationCallback : GoogleLocationCallback() {
         override fun onLocationResult(location: LocationResult) {
             super.onLocationResult(location)
 

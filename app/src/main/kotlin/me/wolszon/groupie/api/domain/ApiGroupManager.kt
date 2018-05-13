@@ -24,7 +24,7 @@ class ApiGroupManager(private val preferences: Preferences,
             if (it.event == StateFeed.Event.UPDATE) {
                 GroupManager.state!!.group = it.updatedGroup!!
             } else if (it.event in listOf(StateFeed.Event.KICK,
-                                              StateFeed.Event.LEAVE)) {
+                                          StateFeed.Event.LEAVE)) {
                 destroyState()
             }
         }, { destroyState() })
@@ -35,12 +35,13 @@ class ApiGroupManager(private val preferences: Preferences,
 
         return groupApi.newGroup(creator)
                 .map(createdPersistingMapper)
-                .informSubject()
+                .process()
     }
 
     override fun joinGroup(groupId: String): Single<Group> {
         return groupApi.findGroup(groupId)
                 .map(joinedPersistingMapper)
+                .process()
                 .onErrorResumeNext {
                     if (it !is HttpException) {
                         throw it
@@ -49,9 +50,8 @@ class ApiGroupManager(private val preferences: Preferences,
                     val member = createMemberRequest()
                     return@onErrorResumeNext groupApi.addMember(groupId, member)
                             .map(createdPersistingMapper)
-                            .informSubject()
+                            .process()
                 }
-                .informSubject()
     }
 
     private val joinedPersistingMapper: (GroupResponse) -> Group = {
@@ -85,7 +85,7 @@ class ApiGroupManager(private val preferences: Preferences,
 
         return groupApi.sendMemberCoordsBit(GroupManager.state!!.getCurrentUser().id, lat, lng)
                 .map { GroupMapper.map(it) }
-                .informSubject()
+                .process()
     }
 
     override fun update(): Single<Group> {
@@ -95,7 +95,7 @@ class ApiGroupManager(private val preferences: Preferences,
 
         return groupApi.findGroup(GroupManager.state!!.getGroupId())
                 .map { GroupMapper.map(it) }
-                .informSubject()
+                .process()
     }
 
     override fun leaveGroup(): Single<Group> {
@@ -111,7 +111,7 @@ class ApiGroupManager(private val preferences: Preferences,
 
         return groupApi.updateMemberRole(memberId, role)
                 .map { GroupMapper.map(it) }
-                .informSubject()
+                .process()
     }
 
     override fun kickMember(memberId: String): Single<Group> {
@@ -123,7 +123,7 @@ class ApiGroupManager(private val preferences: Preferences,
 
         return groupApi.kickMember(memberId)
                 .map { GroupMapper.map(it) }
-                .informSubject()
+                .process()
     }
 
     override fun getGroupObservable(): Observable<out StateFeed> = subject
@@ -143,8 +143,20 @@ class ApiGroupManager(private val preferences: Preferences,
         GroupManager.state = null
     }
 
-    private fun Single<Group>.informSubject(): Single<Group> {
+    private fun Single<Group>.notFoundAsKicked(): Single<Group> {
         return this
+                .doOnError {
+                    if (it is HttpException && it.code() == 404) {
+                        subject.onNext(
+                                StateFeed.kick()
+                        )
+                    }
+                }
+    }
+
+    private fun Single<Group>.process(): Single<Group> {
+        return this
+                .notFoundAsKicked()
                 .doOnSuccess {
                     if (it.members.find { it.isYou() } == null) {
                         // User is not present in members list, he's kicked.
@@ -154,13 +166,6 @@ class ApiGroupManager(private val preferences: Preferences,
                     } else {
                         subject.onNext(
                                 StateFeed.update(it)
-                        )
-                    }
-                }
-                .doOnError {
-                    if (it is HttpException && it.code() == 404) {
-                        subject.onNext(
-                                StateFeed.kick()
                         )
                     }
                 }
