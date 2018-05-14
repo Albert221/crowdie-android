@@ -37,14 +37,10 @@
             android:launchMode="singleTop"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
-        <activity
-            android:name=".android.ui.group.GroupQrActivity"
-            android:label="@string/invite_qr_code"
-            android:parentActivityName=".android.ui.group.GroupActivity" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
     </application>
 
 </manifest>

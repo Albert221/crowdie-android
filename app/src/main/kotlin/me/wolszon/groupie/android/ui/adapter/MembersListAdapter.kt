@@ -37,27 +37,10 @@ class MembersListAdapter @Inject() constructor() : RecyclerView.Adapter<MembersL
 
     override fun getItemId(position: Int): Long = members[position].id.hashCode().toLong()
 
-    fun addMember(member: Member) {
-        members.add(member)
-    }
+    fun updateMembers(members: List<Member>) {
+        this.members.clear()
+        this.members.addAll(members)
 
-    fun updateMember(member: Member) {
-        // Prevent updating unchanged items
-        if (members.indexOfFirst { it == member } != -1) return
-
-        members.indexOfFirst { it.id == member.id }.apply {
-            members[this] = member
-        }
-    }
-
-    fun removeMember(memberId: String) {
-        members.indexOfFirst { it.id == memberId }.apply {
-            members.removeAt(this)
-        }
-    }
-
-    fun commitChanges() {
-        members.sortBy { it.distanceFromUser() }
         notifyDataSetChanged()
     }
 }

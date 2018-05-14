@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="me.wolszon.groupie.android.ui.group.GroupQrActivity">
+    tools:context="me.wolszon.groupie.android.ui.group.tabs.QrTab">
 
     <ImageView
         android:id="@+id/qr"
@@ -17,7 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/qr_code_image" />
+        tools:src="@drawable/qr_code_image" />
 
     <TextView
         android:id="@+id/codeLabel"
@@ -28,18 +28,18 @@
         android:layout_marginStart="24dp"
         android:textAlignment="center"
         android:text="@string/qr_code_label"
-        app:layout_constraintBottom_toTopOf="@+id/id"
+        app:layout_constraintBottom_toTopOf="@+id/groupCode"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/id"
+        android:id="@+id/groupCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"
-        android:text="SoMeRaNd0Mt3xT"
+        tools:text="546ecd47-846f-4caa-a89f-261bfed77ea0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

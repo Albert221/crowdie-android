@@ -1,41 +1,30 @@
 package me.wolszon.groupie.android.ui.group
 
 import android.Manifest
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
-import android.support.v7.widget.DividerItemDecoration
-import android.util.TypedValue
-import android.view.Menu
-import android.view.MenuItem
+import android.support.v4.app.Fragment
 import android.widget.Toast
-import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_group.*
 import me.wolszon.groupie.R
 import me.wolszon.groupie.android.services.CoordsTrackerService
-import me.wolszon.groupie.api.models.dataclass.Member
 import me.wolszon.groupie.base.BaseActivity
-import me.wolszon.groupie.utils.prepare
-import me.wolszon.groupie.android.ui.adapter.MembersListAdapter
-import me.wolszon.groupie.utils.isVisible
+import me.wolszon.groupie.android.ui.group.tabs.MapTab
+import me.wolszon.groupie.android.ui.group.tabs.MembersTab
+import me.wolszon.groupie.android.ui.group.tabs.QrTab
 import javax.inject.Inject
 
-class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
+class GroupActivity : BaseActivity(), GroupView {
     @Inject lateinit var presenter: GroupPresenter
 
-    private lateinit var map: GoogleMap
-    @Inject lateinit var membersListAdapter: MembersListAdapter
-    private val markers = hashMapOf<String, Marker>()
-    private var mapReady = false
-    private var alreadyLoaded = false
+    private lateinit var tabs: Map<Tab, Fragment>
 
-    private lateinit var lastLatLngBounds: LatLngBounds
-    private var mapCentringInterrupted = false
-    private var mapDuringMoving = false
+    enum class Tab {
+        MAP, MEMBERS, QR, SETTINGS
+    }
 
     companion object {
         const val LOCATION_PERMISSION_REQUEST = 1
@@ -47,31 +36,58 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_group)
-        setSupportActionBar(toolbar)
 
-        // Setup views
-        val mapFragment = supportFragmentManager
-                .findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
+        setupTabs()
 
-        centerButton.setOnClickListener { centerMap() }
-        membersListAdapter.onMemberClickListener = this::focusMemberOnMap
-        membersListAdapter.onMemberPromoteListener = presenter::promoteMember
-        membersListAdapter.onMemberSuppressListener = presenter::suppressMember
-        membersListAdapter.onMemberBlockListener = presenter::blockMember
-        membersList.apply {
-            prepare()
-            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+        setTab(Tab.MAP, saveToStack = false)
 
-            adapter = membersListAdapter
+        navigation.setOnNavigationItemReselectedListener { /* Do nothing on purpose. */ }
+        navigation.setOnNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.action_map -> setTab(Tab.MAP)
+                R.id.action_members -> setTab(Tab.MEMBERS)
+                R.id.action_qr -> setTab(Tab.QR)
+                R.id.action_settings -> presenter.leaveGroup()
+
+                else ->
+                    return@setOnNavigationItemSelectedListener false
+            }
+
+            true
         }
-
-        presenter.subscribe(this)
 
         // CoordsTrackerService stuff
         if (checkLocationPermissions()) {
             startTrackerService()
         }
+
+        presenter.subscribe(this)
+    }
+
+    private fun setupTabs() {
+        val tabs = mutableMapOf<Tab, Fragment>(
+                Tab.MAP to MapTab(),
+                Tab.MEMBERS to MembersTab(),
+                Tab.QR to QrTab()
+        )
+
+        tabs.forEach { (_, it) ->supportFragmentInjector().inject(it) }
+
+        this.tabs = tabs.toMap()
+    }
+
+    private fun setTab(tabToSet: Tab, saveToStack: Boolean = true) {
+        val tab = tabs[tabToSet]
+
+        val transaction = supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.tab_frame, tab)
+
+        if (saveToStack) {
+            transaction.addToBackStack(null)
+        }
+
+        transaction.commit()
     }
 
     private fun checkLocationPermissions(): Boolean {
@@ -114,168 +130,6 @@ class GroupActivity : BaseActivity(), GroupView, OnMapReadyCallback {
     override fun onDestroy() {
         super.onDestroy()
         presenter.unsubscribe()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.group_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.action_qr -> {
-            presenter.showQr()
-            true
-        }
-        R.id.action_leave -> {
-            presenter.leaveGroup()
-            true
-        }
-        else -> super.onOptionsItemSelected(item)
-    }
-
-    override fun onMapReady(googleMap: GoogleMap) {
-        map = googleMap
-        map.uiSettings.isMapToolbarEnabled = false
-        map.setOnCameraMoveListener {
-            synchronized(mapDuringMoving) {
-                if (!mapDuringMoving) {
-                    interruptMapCentering()
-                }
-            }
-        }
-
-        mapReady = true
-
-        presenter.loadMembers()
-    }
-
-    override fun showMembers(members: List<Member>) {
-        if (!mapReady) {
-            return
-        }
-
-        val markersToDelete = markers.keys.toMutableList()
-
-        val boundsBuilder = LatLngBounds.Builder()
-        members.forEach {
-            markersToDelete.remove(it.id)
-
-            if (!markers.containsKey(it.id)) {
-                // Given member doesn't have corresponding marker, so it's new. Create one
-                markers[it.id] = map.addMarker(MarkerOptions().position(LatLng(0.0, 0.0)))
-
-                membersListAdapter.addMember(it)
-            } else {
-                membersListAdapter.updateMember(it)
-            }
-
-            markers[it.id]!!.apply{
-                position = it.getLatLng()
-                title = it.name
-
-                boundsBuilder.include(position)
-            }
-        }
-
-        markersToDelete.forEach {
-            markers[it]?.remove()
-            markers.remove(it)
-
-            membersListAdapter.removeMember(it)
-        }
-
-        membersListAdapter.commitChanges()
-
-        if (markers.size > 0) {
-            // Move map's camera boundaries to have it containing all markers
-            lastLatLngBounds = boundsBuilder.build()
-
-            if (!alreadyLoaded) {
-                map.moveCamera(
-                        paddedLngBoundsCameraUpdate(lastLatLngBounds)
-                )
-            } else if (!mapCentringInterrupted) {
-                mapDuringMoving = true
-                map.animateCamera(
-                        paddedLngBoundsCameraUpdate(lastLatLngBounds),
-                        object : GoogleMap.CancelableCallback {
-                            override fun onFinish() { synchronized(mapDuringMoving) { mapDuringMoving = false } }
-                            override fun onCancel() = interruptMapCentering()
-                        }
-                )
-            }
-        }
-
-        alreadyLoaded = true
-    }
-
-    override fun focusMemberOnMap(id: String) {
-        markers[id]?.apply {
-            if (markers.size == 1 && !mapCentringInterrupted) {
-                // If map is already centered on the center of all members (on the only one),
-                // we do not need to move camera.
-                showInfoWindow()
-                return@apply
-            }
-
-            interruptMapCentering()
-
-            map.animateCamera(
-                    CameraUpdateFactory.newLatLng(this.position),
-                    object : GoogleMap.CancelableCallback {
-                        override fun onFinish() = showInfoWindow()
-                        override fun onCancel() = Unit
-                    }
-            )
-        }
-    }
-
-    private fun interruptMapCentering() {
-        centerButton.isVisible = true
-
-        mapCentringInterrupted = true
-        mapDuringMoving = false
-    }
-
-    private fun centerMap() {
-        centerButton.isVisible = false
-
-        mapCentringInterrupted = false
-        mapDuringMoving = true
-        map.animateCamera(
-                paddedLngBoundsCameraUpdate(lastLatLngBounds),
-                object : GoogleMap.CancelableCallback {
-                    override fun onFinish() { synchronized(mapDuringMoving) { mapDuringMoving = false } }
-                    override fun onCancel() = interruptMapCentering()
-                }
-        )
-    }
-
-    private fun paddedLngBoundsCameraUpdate(bounds: LatLngBounds): CameraUpdate {
-        val width = resources.displayMetrics.widthPixels
-        val height = TypedValue
-                .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics)
-                .toInt()
-        val padding = (width * 0.12).toInt()
-
-        return CameraUpdateFactory
-                .newLatLngBounds(bounds, width, height, padding)
-    }
-
-    override fun displayMemberBlockConfirmation(member: Member, callback: (Boolean) -> Unit) {
-        AlertDialog.Builder(this)
-                .setTitle(resources.getString(R.string.kick_member_modal_title))
-                .setMessage(resources.getString(R.string.kick_member_modal_text, member.name))
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton(android.R.string.yes) {
-                    _, _ ->
-                    callback(true)
-                }
-                .setNegativeButton(android.R.string.no) {
-                    _, _ ->
-                    callback(false)
-                }
-                .show()
     }
 
     override fun informAboutBeingKicked() {

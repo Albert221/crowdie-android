@@ -57,6 +57,7 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$versions.supportLibrary"
     implementation "com.android.support:recyclerview-v7:$versions.supportLibrary"
     implementation "com.android.support.constraint:constraint-layout:$versions.constraintLayout"
+    implementation "com.android.support:design:$versions.supportLibrary"
     implementation "com.google.android.gms:play-services-maps:$versions.playServices"
     implementation "com.google.android.gms:play-services-location:$versions.playServices"
     implementation "com.google.android.gms:play-services-vision:$versions.playServices"

@@ -24,16 +24,22 @@ class GroupPresenter(private val groupManager: GroupManager,
         super.subscribe(view)
 
         run {
+            // Request an update every 3 seconds
+            Observable.interval(3, TimeUnit.SECONDS)
+                    .subscribe { run {
+                        groupManager
+                                .update()
+                                .process()
+                    } }
+        }
+
+        run {
             groupManager
                     .getGroupObservable()
                     .subscribeOn(schedulers.backgroundThread())
                     .observeOn(schedulers.mainThread())
                     .subscribe {
                         when (it.event) {
-                            StateFeed.Event.UPDATE -> {
-                                view.showMembers(it.updatedGroup!!.members)
-                            }
-
                             StateFeed.Event.KICK -> {
                                 Log.i(TAG, "User has probably been kicked.")
 
@@ -45,40 +51,14 @@ class GroupPresenter(private val groupManager: GroupManager,
                         }
                     }
         }
-
-        run {
-            Observable.interval(3, 2, TimeUnit.SECONDS)
-                    .subscribe { run { groupManager.update().process() } }
-        }
-    }
-
-    fun loadMembers() = run { groupManager.update().process() }
-
-    fun promoteMember(id: String) = run { groupManager.updateRole(id, Member.ADMIN).process() }
-
-    fun suppressMember(id: String) = run { groupManager.updateRole(id, Member.MEMBER).process() }
-
-    fun blockMember(id: String) {
-        val member = GroupManager.state!!.group.members.find { it.id == id }!!
-        view?.displayMemberBlockConfirmation(member) {
-            result ->
-            if (!result) return@displayMemberBlockConfirmation
-
-            run {
-                groupManager.kickMember(id).process()
-            }
-        }
     }
 
     fun leaveGroup() {
         run {
             groupManager.leaveGroup().process()
         }
-        navigator.openLandingActivity()
-    }
 
-    fun showQr() {
-        navigator.openGroupQrActivity(GroupManager.state!!.getGroupId())
+        navigator.openLandingActivity()
     }
 
     private fun Single<Group>.process(): Disposable {

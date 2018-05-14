@@ -6,7 +6,9 @@ import me.wolszon.groupie.android.services.CoordsTrackerModule
 import me.wolszon.groupie.android.services.CoordsTrackerService
 import me.wolszon.groupie.android.ui.group.GroupActivity
 import me.wolszon.groupie.android.ui.group.GroupModule
-import me.wolszon.groupie.android.ui.group.GroupQrActivity
+import me.wolszon.groupie.android.ui.group.tabs.MapTab
+import me.wolszon.groupie.android.ui.group.tabs.MembersTab
+import me.wolszon.groupie.android.ui.group.tabs.QrTab
 import me.wolszon.groupie.android.ui.landing.LandingActivity
 import me.wolszon.groupie.android.ui.landing.LandingModule
 
@@ -18,8 +20,14 @@ abstract class ActivityBuilder {
     @ContributesAndroidInjector(modules = [GroupModule::class])
     abstract fun bindGroupActivity(): GroupActivity
 
-    @ContributesAndroidInjector
-    abstract fun bindGroupQrActivity(): GroupQrActivity
+    @ContributesAndroidInjector(modules = [GroupModule::class])
+    abstract fun bindGroupMapTab(): MapTab
+
+    @ContributesAndroidInjector(modules = [GroupModule::class])
+    abstract fun bindGroupMembersTab(): MembersTab
+
+    @ContributesAndroidInjector(modules = [GroupModule::class])
+    abstract fun bindGroupQrTab(): QrTab
 
     @ContributesAndroidInjector(modules = [CoordsTrackerModule::class])
     abstract fun bindCoordsTrackerService(): CoordsTrackerService

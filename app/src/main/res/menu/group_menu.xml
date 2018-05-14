@@ -1,20 +1,25 @@
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+<menu
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_map"
+        android:icon="@drawable/gps_following"
+        android:title="@string/map" />
+
+    <item
+        android:id="@+id/action_members"
+        android:icon="@drawable/ic_people"
+        android:title="@string/members" />
 
     <item
         android:id="@+id/action_qr"
         android:icon="@drawable/qr_code"
-        android:title="@string/invite"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/action_leave"
-        android:title="@string/leave_group"
-        app:showAsAction="never" />
+        android:title="@string/invite" />
 
-    <!--<item
+    <item
         android:id="@+id/action_settings"
         android:icon="@drawable/ic_settings"
-        android:title="@string/settings"
-        app:showAsAction="ifRoom" />-->
+        android:title="@string/settings" />
 
 </menu>
