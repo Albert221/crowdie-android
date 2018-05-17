@@ -4,7 +4,7 @@ import dagger.Module
 import dagger.Provides
 import me.wolszon.groupie.android.ui.Navigator
 import me.wolszon.groupie.api.domain.GroupManager
-import me.wolszon.groupie.api.domain.Preferences
+import me.wolszon.groupie.base.Preferences
 import me.wolszon.groupie.base.Schedulers
 
 @Module

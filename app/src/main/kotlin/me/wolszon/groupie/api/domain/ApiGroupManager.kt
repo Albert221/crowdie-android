@@ -4,19 +4,20 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
 import me.wolszon.groupie.android.GroupieApplication
-import me.wolszon.groupie.api.mapper.CreatedMapper
-import me.wolszon.groupie.api.mapper.GroupMapper
+import me.wolszon.groupie.api.models.mapper.CreatedMapper
+import me.wolszon.groupie.api.models.mapper.GroupMapper
 import me.wolszon.groupie.api.models.apimodels.CreatedResponse
 import me.wolszon.groupie.api.models.apimodels.GroupResponse
 import me.wolszon.groupie.api.models.apimodels.MemberRequest
 import me.wolszon.groupie.api.models.dataclass.Group
-import me.wolszon.groupie.api.repository.GroupRetrofitApi
+import me.wolszon.groupie.api.retrofit.V1RetrofitApi
+import me.wolszon.groupie.base.Preferences
 import retrofit2.HttpException
 import retrofit2.Retrofit
 
 class ApiGroupManager(private val preferences: Preferences,
                       private val retrofit: Retrofit) : GroupManager {
-    private val groupApi by lazy { retrofit.create(GroupRetrofitApi::class.java) }
+    private val groupApi by lazy { retrofit.create(V1RetrofitApi::class.java) }
     private val subject: BehaviorSubject<StateFeed> = BehaviorSubject.create()
 
     init {
@@ -30,32 +31,48 @@ class ApiGroupManager(private val preferences: Preferences,
         }, { destroyState() })
     }
 
+    override fun getGroupObservable(): Observable<out StateFeed> = subject
+
     override fun newGroup(): Single<Group> {
         val creator = createMemberRequest()
 
         return groupApi.newGroup(creator)
-                .map(createdPersistingMapper)
+                .map{ mapCreatedAndPersist(it) }
                 .process()
     }
 
     override fun joinGroup(groupId: String): Single<Group> {
         return groupApi.findGroup(groupId)
-                .map(joinedPersistingMapper)
+                .map { mapJoinedAndPersist(it) }
                 .process()
                 .onErrorResumeNext {
-                    if (it !is HttpException) {
+                    if (it !is HttpException || it.code() !in listOf(401, 403)) {
                         throw it
                     }
 
                     val member = createMemberRequest()
                     return@onErrorResumeNext groupApi.addMember(groupId, member)
-                            .map(createdPersistingMapper)
+                            .map { mapCreatedAndPersist(it) }
                             .process()
                 }
     }
 
-    private val joinedPersistingMapper: (GroupResponse) -> Group = {
-        val group = GroupMapper.map(it)
+    private fun mapCreatedAndPersist(createdResponse: CreatedResponse): Group {
+        val group = CreatedMapper.map(createdResponse)
+
+        createdResponse.apply {
+            preferences.lastJoinedGroup = group.id
+            preferences.lastJoinedGroupToken = token
+            preferences.lastJoinedGroupMemberId = yourId
+
+            GroupManager.state = GroupManager.State(group, token, yourId)
+        }
+
+        return group
+    }
+
+    private fun mapJoinedAndPersist(groupResponse: GroupResponse): Group {
+        val group = GroupMapper.map(groupResponse)
 
         GroupManager.state = GroupManager.State(
                 group,
@@ -63,19 +80,7 @@ class ApiGroupManager(private val preferences: Preferences,
                 preferences.lastJoinedGroupMemberId!!
         )
 
-        group
-    }
-
-    private val createdPersistingMapper: (CreatedResponse) -> Group = {
-        val group = CreatedMapper.map(it)
-
-        preferences.lastJoinedGroup = group.id
-        preferences.lastJoinedGroupToken = it.token
-        preferences.lastJoinedGroupMemberId = it.yourId
-
-        GroupManager.state = GroupManager.State(group, it.token, it.yourId)
-
-        group
+        return group
     }
 
     override fun sendCoords(lat: Float, lng: Float): Single<Group> {
@@ -106,7 +111,7 @@ class ApiGroupManager(private val preferences: Preferences,
 
     override fun updateRole(memberId: String, role: Int): Single<Group> {
         if (GroupManager.state?.isAdmin() != true) {
-            return Single.error { GroupAdmin.NoPermissionsException() }
+            return Single.error { GroupManager.NoPermissionsException() }
         }
 
         return groupApi.updateMemberRole(memberId, role)
@@ -116,7 +121,7 @@ class ApiGroupManager(private val preferences: Preferences,
 
     override fun kickMember(memberId: String): Single<Group> {
         if (GroupManager.state?.isAdmin() != true) {
-            return Single.error { GroupAdmin.NoPermissionsException() }
+            return Single.error { GroupManager.NoPermissionsException() }
         } else if (memberId == GroupManager.state!!.getCurrentUser().id) {
             return Single.error { Exception("You cannot kick yourself") }
         }
@@ -125,8 +130,6 @@ class ApiGroupManager(private val preferences: Preferences,
                 .map { GroupMapper.map(it) }
                 .process()
     }
-
-    override fun getGroupObservable(): Observable<out StateFeed> = subject
 
     private fun createMemberRequest(): MemberRequest =
             MemberRequest(
@@ -143,17 +146,6 @@ class ApiGroupManager(private val preferences: Preferences,
         GroupManager.state = null
     }
 
-    private fun Single<Group>.notFoundAsKicked(): Single<Group> {
-        return this
-                .doOnError {
-                    if (it is HttpException && it.code() == 404) {
-                        subject.onNext(
-                                StateFeed.kick()
-                        )
-                    }
-                }
-    }
-
     private fun Single<Group>.process(): Single<Group> {
         return this
                 .notFoundAsKicked()
@@ -166,6 +158,17 @@ class ApiGroupManager(private val preferences: Preferences,
                     } else {
                         subject.onNext(
                                 StateFeed.update(it)
+                        )
+                    }
+                }
+    }
+
+    private fun Single<Group>.notFoundAsKicked(): Single<Group> {
+        return this
+                .doOnError {
+                    if (it is HttpException && it.code() == 404) {
+                        subject.onNext(
+                                StateFeed.kick()
                         )
                     }
                 }

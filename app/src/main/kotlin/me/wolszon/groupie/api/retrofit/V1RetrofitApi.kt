@@ -1,4 +1,4 @@
-package me.wolszon.groupie.api.repository
+package me.wolszon.groupie.api.retrofit
 
 import io.reactivex.Single
 import me.wolszon.groupie.api.models.apimodels.CreatedResponse
@@ -6,7 +6,7 @@ import me.wolszon.groupie.api.models.apimodels.MemberRequest
 import me.wolszon.groupie.api.models.apimodels.GroupResponse
 import retrofit2.http.*
 
-interface GroupRetrofitApi {
+interface V1RetrofitApi {
     @POST("/api/v1/group")
     fun newGroup(@Body creator: MemberRequest): Single<CreatedResponse>
 

@@ -5,7 +5,7 @@ import io.reactivex.disposables.Disposable
 import me.wolszon.groupie.base.BasePresenter
 import me.wolszon.groupie.android.ui.Navigator
 import me.wolszon.groupie.api.domain.GroupManager
-import me.wolszon.groupie.api.domain.Preferences
+import me.wolszon.groupie.base.Preferences
 import me.wolszon.groupie.api.models.dataclass.Group
 import me.wolszon.groupie.base.Schedulers
 
@@ -38,7 +38,7 @@ class LandingPresenter(private val groupManager: GroupManager,
             groupManager.joinGroup(lastJoinedGroup)
                     .subscribeOn(schedulers.backgroundThread())
                     .observeOn(schedulers.mainThread())
-                    .subscribe({ navigator.openGroupActivity() }, { /* Group not present anymore. */ })
+                    .subscribe({ navigator.openGroupActivity() }, { })
         }
     }
 

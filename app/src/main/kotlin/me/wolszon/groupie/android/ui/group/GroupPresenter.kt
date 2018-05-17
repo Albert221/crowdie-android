@@ -30,6 +30,7 @@ class GroupPresenter(private val groupManager: GroupManager,
                         groupManager
                                 .update()
                                 .process()
+                                .subscribe()
                     } }
         }
 
@@ -55,16 +56,16 @@ class GroupPresenter(private val groupManager: GroupManager,
 
     fun leaveGroup() {
         run {
-            groupManager.leaveGroup().process()
+            groupManager
+                    .leaveGroup()
+                    .process()
+                    .subscribe { _ -> navigator.openLandingActivity() }
         }
-
-        navigator.openLandingActivity()
     }
 
-    private fun Single<Group>.process(): Disposable {
+    private fun Single<Group>.process(): Single<Group> {
         return this
                 .subscribeOn(schedulers.backgroundThread())
                 .observeOn(schedulers.mainThread())
-                .subscribe({}, { Log.d(TAG, "GroupManager returned error", it) })
     }
 }

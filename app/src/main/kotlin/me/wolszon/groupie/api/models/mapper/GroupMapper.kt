@@ -1,8 +1,7 @@
-package me.wolszon.groupie.api.mapper
+package me.wolszon.groupie.api.models.mapper
 
 import me.wolszon.groupie.api.models.apimodels.GroupResponse
 import me.wolszon.groupie.api.models.dataclass.Group
-import me.wolszon.groupie.api.models.dataclass.Member
 
 class GroupMapper {
     companion object : Mapper<GroupResponse, Group> {

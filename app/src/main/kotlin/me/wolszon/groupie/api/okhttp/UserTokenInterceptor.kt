@@ -1,7 +1,7 @@
-package me.wolszon.groupie.api
+package me.wolszon.groupie.api.okhttp
 
 import me.wolszon.groupie.api.domain.GroupManager
-import me.wolszon.groupie.api.domain.Preferences
+import me.wolszon.groupie.base.Preferences
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response

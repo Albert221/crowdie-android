@@ -1,4 +1,4 @@
-package me.wolszon.groupie.android.ui.group.tabs
+package me.wolszon.groupie.android.ui.group.tabs.map
 
 import me.wolszon.groupie.api.domain.GroupManager
 import me.wolszon.groupie.api.domain.StateFeed
@@ -7,8 +7,8 @@ import me.wolszon.groupie.base.BasePresenter
 import me.wolszon.groupie.base.Schedulers
 
 class MapPresenter(private val groupManager: GroupManager,
-                   private val schedulers: Schedulers) : BasePresenter<MapTab>() {
-    override fun subscribe(view: MapTab) {
+                   private val schedulers: Schedulers) : BasePresenter<MapView>() {
+    override fun subscribe(view: MapView) {
         super.subscribe(view)
 
         run {

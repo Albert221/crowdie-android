@@ -1,6 +1,5 @@
-package me.wolszon.groupie.android.ui.group.tabs
+package me.wolszon.groupie.android.ui.group.tabs.members
 
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import me.wolszon.groupie.api.domain.GroupManager
@@ -11,8 +10,8 @@ import me.wolszon.groupie.base.BasePresenter
 import me.wolszon.groupie.base.Schedulers
 
 class MembersPresenter(private val groupManager: GroupManager,
-                       private val schedulers: Schedulers) : BasePresenter<MembersTab>() {
-    override fun subscribe(view: MembersTab) {
+                       private val schedulers: Schedulers) : BasePresenter<MembersView>() {
+    override fun subscribe(view: MembersView) {
         super.subscribe(view)
 
         run {

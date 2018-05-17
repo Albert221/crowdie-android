@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="me.wolszon.groupie.android.ui.group.tabs.QrTab">
+    tools:context="me.wolszon.groupie.android.ui.group.tabs.qr.QrTab">
 
     <ImageView
         android:id="@+id/qr"

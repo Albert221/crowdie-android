@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="1"
-    tools:context="me.wolszon.groupie.android.ui.group.tabs.MembersTab">
+    tools:context="me.wolszon.groupie.android.ui.group.tabs.members.MembersTab">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/membersList"

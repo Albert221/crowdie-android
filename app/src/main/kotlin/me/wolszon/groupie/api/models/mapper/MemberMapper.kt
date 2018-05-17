@@ -1,4 +1,4 @@
-package me.wolszon.groupie.api.mapper
+package me.wolszon.groupie.api.models.mapper
 
 import me.wolszon.groupie.api.models.apimodels.MemberResponse
 import me.wolszon.groupie.api.models.dataclass.Member

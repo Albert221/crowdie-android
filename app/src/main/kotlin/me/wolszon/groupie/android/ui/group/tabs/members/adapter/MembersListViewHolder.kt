@@ -1,4 +1,4 @@
-package me.wolszon.groupie.android.ui.adapter.viewholder
+package me.wolszon.groupie.android.ui.group.tabs.members.adapter
 
 import android.graphics.drawable.ColorDrawable
 import android.support.v7.widget.RecyclerView

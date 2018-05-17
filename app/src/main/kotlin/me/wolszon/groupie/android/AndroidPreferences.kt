@@ -2,7 +2,7 @@ package me.wolszon.groupie.android
 
 import android.content.Context
 import android.content.SharedPreferences
-import me.wolszon.groupie.api.domain.Preferences
+import me.wolszon.groupie.base.Preferences
 import javax.inject.Inject
 
 class AndroidPreferences @Inject constructor(context: Context) : Preferences {

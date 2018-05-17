@@ -1,4 +1,4 @@
-package me.wolszon.groupie.android.ui.group.tabs
+package me.wolszon.groupie.android.ui.group.tabs.members
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -6,16 +6,15 @@ import android.support.v7.widget.DividerItemDecoration
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.group_tab_members.*
 import me.wolszon.groupie.R
-import me.wolszon.groupie.android.ui.adapter.MembersListAdapter
+import me.wolszon.groupie.android.ui.group.tabs.members.adapter.MembersListAdapter
 import me.wolszon.groupie.api.models.dataclass.Member
-import me.wolszon.groupie.base.BaseView
+import me.wolszon.groupie.base.BaseFragment
 import me.wolszon.groupie.utils.prepare
 import javax.inject.Inject
 
-class MembersTab : DaggerFragment(), BaseView {
+class MembersTab : BaseFragment(), MembersView {
     @Inject lateinit var presenter: MembersPresenter
     @Inject lateinit var membersListAdapter: MembersListAdapter
 
@@ -25,7 +24,7 @@ class MembersTab : DaggerFragment(), BaseView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        membersListAdapter.onMemberClickListener = { }
+        membersListAdapter.onMemberClickListener = {}
         membersListAdapter.onMemberPromoteListener = presenter::promoteMember
         membersListAdapter.onMemberSuppressListener = presenter::suppressMember
         membersListAdapter.onMemberBlockListener = presenter::blockMember
@@ -57,11 +56,11 @@ class MembersTab : DaggerFragment(), BaseView {
         presenter.unsubscribe()
     }
 
-    fun showMembers(members: List<Member>) {
+    override fun showMembers(members: List<Member>) {
         membersListAdapter.updateMembers(members)
     }
 
-    fun displayMemberBlockConfirmation(member: Member, callback: (Boolean) -> Unit) {
+    override fun displayMemberBlockConfirmation(member: Member, callback: (Boolean) -> Unit) {
         AlertDialog.Builder(activity)
                 .setTitle(resources.getString(R.string.kick_member_modal_title))
                 .setMessage(resources.getString(R.string.kick_member_modal_text, member.name))
@@ -75,9 +74,5 @@ class MembersTab : DaggerFragment(), BaseView {
                     callback(false)
                 }
                 .show()
-    }
-
-    override fun showErrorDialog(e: Throwable) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

@@ -2,7 +2,7 @@ package me.wolszon.groupie.api.domain
 
 import me.wolszon.groupie.api.models.dataclass.Group
 
-class StateFeed (val event: Event, val updatedGroup: Group? = null) {
+class StateFeed(val event: Event, val updatedGroup: Group? = null) {
     enum class Event {
         UPDATE, KICK, LEAVE
     }

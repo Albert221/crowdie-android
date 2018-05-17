@@ -1,4 +1,4 @@
-package me.wolszon.groupie.android.ui.group.tabs
+package me.wolszon.groupie.android.ui.group.tabs.qr
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -12,14 +12,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.group_tab_qr.*
 import me.wolszon.groupie.R
+import me.wolszon.groupie.android.ui.group.tabs.qr.QrPresenter
+import me.wolszon.groupie.base.BaseFragment
 import me.wolszon.groupie.base.BaseView
 import net.glxn.qrgen.android.QRCode
 import javax.inject.Inject
 
-class QrTab : DaggerFragment(), BaseView {
+class QrTab : BaseFragment(), QrView {
     @Inject lateinit var presenter: QrPresenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -61,9 +62,5 @@ class QrTab : DaggerFragment(), BaseView {
         }
 
         return cache.get(groupId)
-    }
-
-    override fun showErrorDialog(e: Throwable) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

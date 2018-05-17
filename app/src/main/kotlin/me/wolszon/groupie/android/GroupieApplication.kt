@@ -8,6 +8,8 @@ import me.wolszon.groupie.di.DaggerAppComponent
 
 class GroupieApplication : DaggerApplication() {
     companion object {
+        const val APPLICATION_NAME = "Groupie"
+
         lateinit var androidId: String
     }
 

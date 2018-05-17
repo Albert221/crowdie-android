@@ -5,10 +5,9 @@ import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import me.wolszon.groupie.BuildConfig
-import me.wolszon.groupie.android.GroupieApplication
 import me.wolszon.groupie.android.AndroidPreferences
-import me.wolszon.groupie.api.UserTokenInterceptor
-import me.wolszon.groupie.api.domain.Preferences
+import me.wolszon.groupie.api.okhttp.UserTokenInterceptor
+import me.wolszon.groupie.base.Preferences
 import me.wolszon.groupie.base.ApplicationSchedulers
 import me.wolszon.groupie.base.Schedulers
 import okhttp3.OkHttpClient

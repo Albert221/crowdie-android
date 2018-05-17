@@ -1,4 +1,4 @@
-package me.wolszon.groupie.api.domain
+package me.wolszon.groupie.base
 
 interface Preferences {
     var username: String

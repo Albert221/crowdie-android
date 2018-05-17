@@ -12,9 +12,9 @@ import kotlinx.android.synthetic.main.activity_group.*
 import me.wolszon.groupie.R
 import me.wolszon.groupie.android.services.CoordsTrackerService
 import me.wolszon.groupie.base.BaseActivity
-import me.wolszon.groupie.android.ui.group.tabs.MapTab
-import me.wolszon.groupie.android.ui.group.tabs.MembersTab
-import me.wolszon.groupie.android.ui.group.tabs.QrTab
+import me.wolszon.groupie.android.ui.group.tabs.map.MapTab
+import me.wolszon.groupie.android.ui.group.tabs.members.MembersTab
+import me.wolszon.groupie.android.ui.group.tabs.qr.QrTab
 import javax.inject.Inject
 
 class GroupActivity : BaseActivity(), GroupView {
@@ -71,7 +71,7 @@ class GroupActivity : BaseActivity(), GroupView {
                 Tab.QR to QrTab()
         )
 
-        tabs.forEach { (_, it) ->supportFragmentInjector().inject(it) }
+        tabs.forEach { (_, it) -> supportFragmentInjector().inject(it) }
 
         this.tabs = tabs.toMap()
     }

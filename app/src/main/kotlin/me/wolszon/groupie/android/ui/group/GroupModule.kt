@@ -3,9 +3,9 @@ package me.wolszon.groupie.android.ui.group
 import dagger.Module
 import dagger.Provides
 import me.wolszon.groupie.android.ui.Navigator
-import me.wolszon.groupie.android.ui.group.tabs.MapPresenter
-import me.wolszon.groupie.android.ui.group.tabs.MembersPresenter
-import me.wolszon.groupie.android.ui.group.tabs.QrPresenter
+import me.wolszon.groupie.android.ui.group.tabs.map.MapPresenter
+import me.wolszon.groupie.android.ui.group.tabs.members.MembersPresenter
+import me.wolszon.groupie.android.ui.group.tabs.qr.QrPresenter
 import me.wolszon.groupie.api.domain.GroupManager
 import me.wolszon.groupie.base.Schedulers
 

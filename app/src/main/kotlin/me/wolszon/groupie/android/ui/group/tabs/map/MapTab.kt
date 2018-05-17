@@ -1,4 +1,4 @@
-package me.wolszon.groupie.android.ui.group.tabs
+package me.wolszon.groupie.android.ui.group.tabs.map
 
 import android.os.Bundle
 import android.util.TypedValue
@@ -10,15 +10,14 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.group_tab_map.*
 import me.wolszon.groupie.R
 import me.wolszon.groupie.api.models.dataclass.Member
-import me.wolszon.groupie.base.BaseView
+import me.wolszon.groupie.base.BaseFragment
 import me.wolszon.groupie.utils.isVisible
 import javax.inject.Inject
 
-class MapTab : DaggerFragment(), OnMapReadyCallback, BaseView {
+class MapTab : BaseFragment(), OnMapReadyCallback, MapView {
     @Inject lateinit var presenter: MapPresenter
 
     private lateinit var map: GoogleMap
@@ -78,7 +77,7 @@ class MapTab : DaggerFragment(), OnMapReadyCallback, BaseView {
         presenter.unsubscribe()
     }
 
-    fun showMembers(members: List<Member>) {
+    override fun showMembers(members: List<Member>) {
         val markersToDelete = markers.keys.toMutableList()
         val boundsBuilder = LatLngBounds.Builder()
         members.forEach {
@@ -149,10 +148,6 @@ class MapTab : DaggerFragment(), OnMapReadyCallback, BaseView {
 
         return CameraUpdateFactory
                 .newLatLngBounds(bounds, width, height, padding)
-    }
-
-    override fun showErrorDialog(e: Throwable) {
-        TODO("not implemented")
     }
 
     private inner class MapMoveCallback : GoogleMap.CancelableCallback {
