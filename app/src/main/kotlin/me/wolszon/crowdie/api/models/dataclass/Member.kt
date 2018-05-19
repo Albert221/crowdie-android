@@ -18,6 +18,8 @@ data class Member (
         const val ADMIN = 1
     }
 
+    fun isAdmin(): Boolean = role == ADMIN
+
     fun getLatLng(): LatLng = LatLng(lat.toDouble(), lng.toDouble())
 
     fun isYou(): Boolean = id == GroupManager.state!!.currentMemberId

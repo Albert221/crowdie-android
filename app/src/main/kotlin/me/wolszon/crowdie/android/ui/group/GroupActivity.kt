@@ -15,6 +15,7 @@ import me.wolszon.crowdie.base.BaseActivity
 import me.wolszon.crowdie.android.ui.group.tabs.map.MapTab
 import me.wolszon.crowdie.android.ui.group.tabs.members.MembersTab
 import me.wolszon.crowdie.android.ui.group.tabs.qr.QrTab
+import me.wolszon.crowdie.utils.setItemVisible
 import javax.inject.Inject
 
 class GroupActivity : BaseActivity(), GroupView {
@@ -38,16 +39,15 @@ class GroupActivity : BaseActivity(), GroupView {
         setContentView(R.layout.activity_group)
 
         setupTabs()
-
-        setTab(Tab.MAP, saveToStack = false)
+        setActiveTab(Tab.MAP, saveToStack = false)
 
         navigation.setOnNavigationItemReselectedListener { /* Do nothing on purpose. */ }
         navigation.setOnNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.action_map -> setTab(Tab.MAP)
-                R.id.action_members -> setTab(Tab.MEMBERS)
-                R.id.action_qr -> setTab(Tab.QR)
-                R.id.action_settings -> presenter.leaveGroup()
+                R.id.action_map -> setActiveTab(Tab.MAP)
+                R.id.action_members -> setActiveTab(Tab.MEMBERS)
+                R.id.action_qr -> setActiveTab(Tab.QR)
+                R.id.action_settings -> Unit
 
                 else ->
                     return@setOnNavigationItemSelectedListener false
@@ -76,7 +76,11 @@ class GroupActivity : BaseActivity(), GroupView {
         this.tabs = tabs.toMap()
     }
 
-    private fun setTab(tabToSet: Tab, saveToStack: Boolean = true) {
+    override fun setSettingsVisibility(visible: Boolean) {
+        navigation.setItemVisible(R.id.action_settings, visible)
+    }
+
+    private fun setActiveTab(tabToSet: Tab, saveToStack: Boolean = true) {
         val tab = tabs[tabToSet]
 
         val transaction = supportFragmentManager

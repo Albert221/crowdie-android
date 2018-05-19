@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit
 class GroupPresenter(private val groupManager: GroupManager,
                      private val navigator: Navigator,
                      private val schedulers: Schedulers) : BasePresenter<GroupView>() {
+    private var previousRole: Int = 0
+
     companion object {
         val TAG = GroupPresenter::class.java.simpleName!!
     }
@@ -41,6 +43,8 @@ class GroupPresenter(private val groupManager: GroupManager,
                     .observeOn(schedulers.mainThread())
                     .subscribe {
                         when (it.event) {
+                            StateFeed.Event.UPDATE -> handleUpdate(it.updatedGroup!!)
+
                             StateFeed.Event.KICK -> {
                                 Log.i(TAG, "User has probably been kicked.")
 
@@ -52,6 +56,16 @@ class GroupPresenter(private val groupManager: GroupManager,
                         }
                     }
         }
+    }
+
+    private fun handleUpdate(group: Group) {
+        val member = group.members.find { it.isYou() }!!
+
+        if (previousRole != member.role) {
+            view?.setSettingsVisibility(member.isAdmin())
+        }
+
+        previousRole = member.role
     }
 
     fun leaveGroup() {

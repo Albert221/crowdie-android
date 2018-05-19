@@ -1,6 +1,7 @@
 package me.wolszon.crowdie.android.ui.group.tabs.members
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.group_tab_members.*
 import me.wolszon.crowdie.R
 import me.wolszon.crowdie.android.ui.group.tabs.members.adapter.MembersListAdapter
+import me.wolszon.crowdie.android.ui.landing.LandingActivity
 import me.wolszon.crowdie.api.models.dataclass.Member
 import me.wolszon.crowdie.base.BaseFragment
 import me.wolszon.crowdie.utils.prepare
@@ -24,16 +26,21 @@ class MembersTab : BaseFragment(), MembersView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        membersListAdapter.onMemberClickListener = {}
-        membersListAdapter.onMemberPromoteListener = presenter::promoteMember
-        membersListAdapter.onMemberSuppressListener = presenter::suppressMember
-        membersListAdapter.onMemberBlockListener = presenter::blockMember
+        membersListAdapter.apply {
+            onMemberClickListener = {}
+            onMemberPromoteListener = presenter::promoteMember
+            onMemberSuppressListener = presenter::suppressMember
+            onMemberBlockListener = presenter::blockMember
+        }
+
         membersList?.apply {
             prepare()
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
 
             adapter = membersListAdapter
         }
+
+        leaveGroupButton.setOnClickListener { presenter.leaveGroup() }
 
         presenter.subscribe(this)
     }
@@ -74,5 +81,12 @@ class MembersTab : BaseFragment(), MembersView {
                     callback(false)
                 }
                 .show()
+    }
+
+    override fun openLandingActivity() {
+        // FIXME: Temporary solution, because Navigator can't be injected into MembersPresenter :(
+        startActivity(Intent(context, LandingActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        })
     }
 }

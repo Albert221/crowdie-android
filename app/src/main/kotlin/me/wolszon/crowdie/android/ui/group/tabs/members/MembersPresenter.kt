@@ -2,6 +2,7 @@ package me.wolszon.crowdie.android.ui.group.tabs.members
 
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
+import me.wolszon.crowdie.android.ui.Navigator
 import me.wolszon.crowdie.api.domain.GroupManager
 import me.wolszon.crowdie.api.domain.StateFeed
 import me.wolszon.crowdie.api.models.dataclass.Group
@@ -51,10 +52,18 @@ class MembersPresenter(private val groupManager: GroupManager,
         }
     }
 
-    private fun Single<Group>.process(): Disposable {
+    fun leaveGroup() {
+        run {
+            groupManager
+                    .leaveGroup()
+                    .process { view?.openLandingActivity() }
+        }
+    }
+
+    private fun Single<Group>.process(callback: (Group) -> Unit = {}): Disposable {
         return this
                 .subscribeOn(schedulers.backgroundThread())
                 .observeOn(schedulers.mainThread())
-                .subscribe({}, { view?.showErrorDialog(it) })
+                .subscribe(callback, { view?.showErrorDialog(it) })
     }
 }

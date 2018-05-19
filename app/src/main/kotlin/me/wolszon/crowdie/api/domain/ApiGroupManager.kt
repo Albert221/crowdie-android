@@ -114,6 +114,10 @@ class ApiGroupManager(private val preferences: Preferences,
             return Single.error { GroupManager.NoPermissionsException() }
         }
 
+        if (memberId == GroupManager.state?.currentMemberId) {
+            return Single.error { Exception("You cannot suppress yourself!") }
+        }
+
         return groupApi.updateMemberRole(memberId, role)
                 .map { GroupMapper.map(it) }
                 .process()
