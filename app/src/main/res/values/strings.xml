@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Groupie</string>
+    <string name="app_name">Crowdie</string>
     <string name="title_activity_maps">Map</string>
     <string name="promote">Promote</string>
     <string name="suppress">Suppress</string>

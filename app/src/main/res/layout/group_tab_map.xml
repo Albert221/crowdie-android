@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="1"
-    tools:context="me.wolszon.groupie.android.ui.group.tabs.map.MapTab">
+    tools:context="me.wolszon.crowdie.android.ui.group.tabs.map.MapTab">
 
     <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
         android:id="@+id/map"

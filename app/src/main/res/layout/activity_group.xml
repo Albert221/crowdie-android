@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="me.wolszon.groupie.android.ui.group.GroupActivity">
+    tools:context="me.wolszon.crowdie.android.ui.group.GroupActivity">
 
     <FrameLayout
         android:id="@+id/tab_frame"
