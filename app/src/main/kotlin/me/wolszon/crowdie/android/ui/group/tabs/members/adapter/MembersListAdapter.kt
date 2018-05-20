@@ -10,10 +10,10 @@ import javax.inject.Inject
 class MembersListAdapter @Inject() constructor() : RecyclerView.Adapter<MembersListViewHolder>() {
     private val members = arrayListOf<Member>()
 
-    lateinit var onMemberClickListener: (String) -> Unit
-    lateinit var onMemberPromoteListener: (String) -> Unit
-    lateinit var onMemberSuppressListener: (String) -> Unit
-    lateinit var onMemberBlockListener: (String) -> Unit
+    var onMemberClickListener: (String) -> Unit = {}
+    var onMemberPromoteListener: (String) -> Unit = {}
+    var onMemberSuppressListener: (String) -> Unit = {}
+    var onMemberBlockListener: (String) -> Unit = {}
 
     init {
         setHasStableIds(true)

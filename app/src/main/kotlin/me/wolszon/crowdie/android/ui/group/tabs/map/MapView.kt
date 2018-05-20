@@ -5,4 +5,5 @@ import me.wolszon.crowdie.base.BaseView
 
 interface MapView : BaseView {
     fun showMembers(members: List<Member>)
+    fun focusMemberOnMap(id: String)
 }

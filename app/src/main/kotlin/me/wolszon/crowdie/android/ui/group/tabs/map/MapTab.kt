@@ -121,6 +121,28 @@ class MapTab : BaseFragment(), OnMapReadyCallback, MapView {
         mapAlreadyLoaded = true
     }
 
+    override fun focusMemberOnMap(id: String) {
+        markers[id]?.apply {
+            if (markers.size == 1 && !mapCentringInterrupted) {
+                // If map is already centered on the center of all members (on the only one),
+                // we do not need to move camera.
+                showInfoWindow()
+                return@apply
+            }
+
+            interruptMapCentering()
+
+            map.animateCamera(
+                    CameraUpdateFactory.newLatLng(this.position),
+                    object : GoogleMap.CancelableCallback {
+                        override fun onFinish() = showInfoWindow()
+                        override fun onCancel() = Unit
+                    }
+            )
+        }
+    }
+
+
     private fun centerMap() {
         centerButton.isVisible = false
 

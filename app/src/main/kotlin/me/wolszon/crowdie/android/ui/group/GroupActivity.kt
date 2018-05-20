@@ -67,7 +67,12 @@ class GroupActivity : BaseActivity(), GroupView {
     private fun setupTabs() {
         val tabs = mutableMapOf<Tab, Fragment>(
                 Tab.MAP to MapTab(),
-                Tab.MEMBERS to MembersTab(),
+                Tab.MEMBERS to MembersTab({
+                    navigation.selectedItemId = R.id.action_map
+                    // Changing selected item id is like tapping on it, so it already calls `setActiveTab`.
+
+                    (tabs[Tab.MAP] as MapTab).focusMemberOnMap(it)
+                }),
                 Tab.QR to QrTab()
         )
 

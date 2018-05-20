@@ -1,5 +1,6 @@
 package me.wolszon.crowdie.android.ui.group.tabs.members
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
@@ -16,7 +17,8 @@ import me.wolszon.crowdie.base.BaseFragment
 import me.wolszon.crowdie.utils.prepare
 import javax.inject.Inject
 
-class MembersTab : BaseFragment(), MembersView {
+@SuppressLint("ValidFragment")
+class MembersTab(private val onMemberClickListener: (String) -> Unit) : BaseFragment(), MembersView {
     @Inject lateinit var presenter: MembersPresenter
     @Inject lateinit var membersListAdapter: MembersListAdapter
 
@@ -27,7 +29,7 @@ class MembersTab : BaseFragment(), MembersView {
         super.onViewCreated(view, savedInstanceState)
 
         membersListAdapter.apply {
-            onMemberClickListener = {}
+            onMemberClickListener = this@MembersTab.onMemberClickListener
             onMemberPromoteListener = presenter::promoteMember
             onMemberSuppressListener = presenter::suppressMember
             onMemberBlockListener = presenter::blockMember
