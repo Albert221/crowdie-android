@@ -6,14 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.group_tab_map.*
 import me.wolszon.crowdie.R
 import me.wolszon.crowdie.api.models.dataclass.Member
 import me.wolszon.crowdie.base.BaseFragment
+import me.wolszon.crowdie.utils.bitmapDescriptorFactoryFromVectorResource
 import me.wolszon.crowdie.utils.isVisible
 import javax.inject.Inject
 
@@ -85,7 +83,11 @@ class MapTab : BaseFragment(), OnMapReadyCallback, MapView {
 
             if (!markers.containsKey(it.id)) {
                 // Given member doesn't have corresponding marker, so it's new. Create one
-                markers[it.id] = map.addMarker(MarkerOptions().position(LatLng(0.0, 0.0)))
+                markers[it.id] = map.addMarker(
+                        MarkerOptions()
+                                .position(LatLng(0.0, 0.0))
+//                                .icon(bitmapDescriptorFactoryFromVectorResource(R.drawable.face, activity!!))
+                )
             }
 
             markers[it.id]!!.apply{

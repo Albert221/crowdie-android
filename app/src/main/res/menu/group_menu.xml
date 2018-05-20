@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/action_map"
-        android:icon="@drawable/gps_following"
+        android:icon="@drawable/map"
         android:title="@string/map" />
 
     <item
