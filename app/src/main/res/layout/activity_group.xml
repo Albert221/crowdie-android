@@ -18,8 +18,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="0"
         android:background="@color/colorPrimary"
-        app:itemIconTint="#ffffff"
-        app:itemTextColor="#ffffff"
+        app:itemIconTint="@color/navigation_font_color"
+        app:itemTextColor="@color/navigation_font_color"
         app:menu="@menu/group_menu" />
 
 </LinearLayout>

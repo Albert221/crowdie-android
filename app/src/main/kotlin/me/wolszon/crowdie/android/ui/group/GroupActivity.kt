@@ -15,6 +15,7 @@ import me.wolszon.crowdie.base.BaseActivity
 import me.wolszon.crowdie.android.ui.group.tabs.map.MapTab
 import me.wolszon.crowdie.android.ui.group.tabs.members.MembersTab
 import me.wolszon.crowdie.android.ui.group.tabs.qr.QrTab
+import me.wolszon.crowdie.utils.disableShiftMode
 import me.wolszon.crowdie.utils.setItemVisible
 import javax.inject.Inject
 
@@ -41,6 +42,7 @@ class GroupActivity : BaseActivity(), GroupView {
         setupTabs()
         setActiveTab(Tab.MAP, saveToStack = false)
 
+        navigation.disableShiftMode()
         navigation.setOnNavigationItemReselectedListener { /* Do nothing on purpose. */ }
         navigation.setOnNavigationItemSelectedListener {
             when (it.itemId) {
