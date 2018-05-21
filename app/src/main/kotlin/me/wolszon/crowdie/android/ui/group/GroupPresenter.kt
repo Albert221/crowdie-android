@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
 class GroupPresenter(private val groupManager: GroupManager,
                      private val navigator: Navigator,
                      private val schedulers: Schedulers) : BasePresenter<GroupView>() {
-    private var previousRole: Int = 0
+    private var previousRole: Member.Role = Member.Role.MEMBER
 
     companion object {
         val TAG = GroupPresenter::class.java.simpleName!!

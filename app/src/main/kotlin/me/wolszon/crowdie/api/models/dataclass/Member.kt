@@ -9,16 +9,15 @@ import kotlin.math.roundToInt
 data class Member (
         val id: String,
         val name: String,
-        val role: Int,
+        val role: Role,
         val lat: Float,
         val lng: Float
 ) {
-    companion object {
-        const val MEMBER = 0
-        const val ADMIN = 1
+    enum class Role {
+        MEMBER, ADMIN
     }
 
-    fun isAdmin(): Boolean = role == ADMIN
+    fun isAdmin(): Boolean = role == Role.ADMIN
 
     fun getLatLng(): LatLng = LatLng(lat.toDouble(), lng.toDouble())
 

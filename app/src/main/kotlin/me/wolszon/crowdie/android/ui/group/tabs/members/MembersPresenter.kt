@@ -36,9 +36,9 @@ class MembersPresenter(private val groupManager: GroupManager,
         view?.showMembers(group.members)
     }
 
-    fun promoteMember(id: String) = run { groupManager.updateRole(id, Member.ADMIN).process() }
+    fun promoteMember(id: String) = run { groupManager.updateRole(id, Member.Role.ADMIN).process() }
 
-    fun suppressMember(id: String) = run { groupManager.updateRole(id, Member.MEMBER).process() }
+    fun suppressMember(id: String) = run { groupManager.updateRole(id, Member.Role.MEMBER).process() }
 
     fun blockMember(id: String) {
         val member = GroupManager.state!!.group.members.find { it.id == id }!!

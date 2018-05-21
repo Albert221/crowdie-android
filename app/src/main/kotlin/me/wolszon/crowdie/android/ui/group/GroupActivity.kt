@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_group.*
 import me.wolszon.crowdie.R
@@ -14,6 +15,7 @@ import me.wolszon.crowdie.android.services.CoordsTrackerService
 import me.wolszon.crowdie.base.BaseActivity
 import me.wolszon.crowdie.android.ui.group.tabs.map.MapTab
 import me.wolszon.crowdie.android.ui.group.tabs.members.MembersTab
+import me.wolszon.crowdie.android.ui.group.tabs.members.adapter.MemberClickEventSubject
 import me.wolszon.crowdie.android.ui.group.tabs.qr.QrTab
 import me.wolszon.crowdie.utils.disableShiftMode
 import me.wolszon.crowdie.utils.setItemVisible
@@ -21,6 +23,7 @@ import javax.inject.Inject
 
 class GroupActivity : BaseActivity(), GroupView {
     @Inject lateinit var presenter: GroupPresenter
+    @Inject lateinit var memberClickEventSubject: MemberClickEventSubject
 
     private lateinit var tabs: Map<Tab, Fragment>
 
@@ -40,7 +43,7 @@ class GroupActivity : BaseActivity(), GroupView {
         setContentView(R.layout.activity_group)
 
         setupTabs()
-        setActiveTab(Tab.MAP, saveToStack = false)
+        setActiveTab(Tab.MAP, saveToStack = true)
 
         navigation.disableShiftMode()
         navigation.setOnNavigationItemReselectedListener { /* Do nothing on purpose. */ }
@@ -58,6 +61,14 @@ class GroupActivity : BaseActivity(), GroupView {
             true
         }
 
+        memberClickEventSubject.subscribe {
+            Log.d("lol", "subscribe lol")
+            navigation.selectedItemId = R.id.action_map
+            // Changing selected item id is like tapping on it, so it already calls `setActiveTab`.
+
+            (tabs[Tab.MAP] as MapTab).focusMemberOnMap(it)
+        }
+
         // CoordsTrackerService stuff
         if (checkLocationPermissions()) {
             startTrackerService()
@@ -69,12 +80,7 @@ class GroupActivity : BaseActivity(), GroupView {
     private fun setupTabs() {
         val tabs = mutableMapOf<Tab, Fragment>(
                 Tab.MAP to MapTab(),
-                Tab.MEMBERS to MembersTab({
-                    navigation.selectedItemId = R.id.action_map
-                    // Changing selected item id is like tapping on it, so it already calls `setActiveTab`.
-
-                    (tabs[Tab.MAP] as MapTab).focusMemberOnMap(it)
-                }),
+                Tab.MEMBERS to MembersTab(),
                 Tab.QR to QrTab()
         )
 
@@ -87,7 +93,7 @@ class GroupActivity : BaseActivity(), GroupView {
         navigation.setItemVisible(R.id.action_settings, visible)
     }
 
-    private fun setActiveTab(tabToSet: Tab, saveToStack: Boolean = true) {
+    private fun setActiveTab(tabToSet: Tab, saveToStack: Boolean = false) {
         val tab = tabs[tabToSet]
 
         val transaction = supportFragmentManager

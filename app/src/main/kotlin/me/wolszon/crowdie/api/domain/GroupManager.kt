@@ -20,7 +20,7 @@ interface GroupManager {
     fun leaveGroup(): Single<Group>
 
     // Admin methods
-    fun updateRole(memberId: String, role: Int): Single<Group>
+    fun updateRole(memberId: String, role: Member.Role): Single<Group>
     fun kickMember(memberId: String): Single<Group>
 
     class NoPermissionsException : Exception("You don't have permissions.")
@@ -34,6 +34,6 @@ interface GroupManager {
 
         fun getCurrentUser(): Member = group.members.find { it.isYou() }!!
 
-        fun isAdmin(): Boolean = getCurrentUser().role == Member.ADMIN
+        fun isAdmin(): Boolean = getCurrentUser().role == Member.Role.ADMIN
     }
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/suppress_action"
+        android:title="@string/suppress"
+        android:visible="false" />
+    <item
+        android:id="@+id/promote_action"
+        android:title="@string/promote"
+        android:visible="true" />
+    <item
+        android:id="@+id/kick_action"
+        android:title="@string/kick"
+        android:visible="true" />
+</menu>

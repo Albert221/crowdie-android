@@ -21,4 +21,7 @@
     <string name="map">Map</string>
     <string name="members">Members</string>
     <string name="settings">Settings</string>
+    <string name="no_longer_want_to_be_here">No longer want to be here?</string>
+    <string name="leave">Leave</string>
+    <string name="kick">Kick</string>
 </resources>

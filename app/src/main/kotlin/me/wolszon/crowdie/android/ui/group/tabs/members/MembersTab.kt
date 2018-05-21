@@ -1,10 +1,8 @@
 package me.wolszon.crowdie.android.ui.group.tabs.members
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.widget.DividerItemDecoration
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,8 +15,7 @@ import me.wolszon.crowdie.base.BaseFragment
 import me.wolszon.crowdie.utils.prepare
 import javax.inject.Inject
 
-@SuppressLint("ValidFragment")
-class MembersTab(private val onMemberClickListener: (String) -> Unit) : BaseFragment(), MembersView {
+class MembersTab : BaseFragment(), MembersView {
     @Inject lateinit var presenter: MembersPresenter
     @Inject lateinit var membersListAdapter: MembersListAdapter
 
@@ -29,7 +26,6 @@ class MembersTab(private val onMemberClickListener: (String) -> Unit) : BaseFrag
         super.onViewCreated(view, savedInstanceState)
 
         membersListAdapter.apply {
-            onMemberClickListener = this@MembersTab.onMemberClickListener
             onMemberPromoteListener = presenter::promoteMember
             onMemberSuppressListener = presenter::suppressMember
             onMemberBlockListener = presenter::blockMember
@@ -37,8 +33,6 @@ class MembersTab(private val onMemberClickListener: (String) -> Unit) : BaseFrag
 
         membersList?.apply {
             prepare()
-            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-
             adapter = membersListAdapter
         }
 

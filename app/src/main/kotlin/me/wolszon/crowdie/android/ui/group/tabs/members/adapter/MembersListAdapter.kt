@@ -7,10 +7,10 @@ import me.wolszon.crowdie.api.models.dataclass.Member
 import me.wolszon.crowdie.utils.inflate
 import javax.inject.Inject
 
-class MembersListAdapter @Inject() constructor() : RecyclerView.Adapter<MembersListViewHolder>() {
+class MembersListAdapter @Inject constructor(private val memberClickEventSubject: MemberClickEventSubject)
+        : RecyclerView.Adapter<MembersListViewHolder>() {
     private val members = arrayListOf<Member>()
 
-    var onMemberClickListener: (String) -> Unit = {}
     var onMemberPromoteListener: (String) -> Unit = {}
     var onMemberSuppressListener: (String) -> Unit = {}
     var onMemberBlockListener: (String) -> Unit = {}
@@ -21,7 +21,7 @@ class MembersListAdapter @Inject() constructor() : RecyclerView.Adapter<MembersL
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MembersListViewHolder =
             MembersListViewHolder(parent.inflate(R.layout.members_list_item),
-                    onMemberClickListener,
+                    memberClickEventSubject,
                     onMemberPromoteListener,
                     onMemberSuppressListener,
                     onMemberBlockListener)

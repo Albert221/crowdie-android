@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="1"
+    android:background="@drawable/background_gradient"
     tools:context="me.wolszon.crowdie.android.ui.group.tabs.members.MembersTab">
 
     <LinearLayout
@@ -15,6 +16,11 @@
             android:id="@+id/membersList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            tools:itemCount="6"
             tools:listitem="@layout/members_list_item" />
 
         <LinearLayout
@@ -30,14 +36,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="No longer want to be here?" />
+                android:textColor="@color/textOnPrimary"
+                android:text="@string/no_longer_want_to_be_here" />
 
-            <Button
+            <android.support.v7.widget.AppCompatButton
                 android:id="@+id/leaveGroupButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:text="Leave" />
+                android:textColor="@color/block"
+                app:backgroundTint="@android:color/white"
+                android:text="@string/leave" />
 
         </LinearLayout>
 

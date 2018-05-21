@@ -10,6 +10,8 @@ import me.wolszon.crowdie.api.models.apimodels.CreatedResponse
 import me.wolszon.crowdie.api.models.apimodels.GroupResponse
 import me.wolszon.crowdie.api.models.apimodels.MemberRequest
 import me.wolszon.crowdie.api.models.dataclass.Group
+import me.wolszon.crowdie.api.models.dataclass.Member
+import me.wolszon.crowdie.api.models.mapper.MemberMapper
 import me.wolszon.crowdie.api.retrofit.V1RetrofitApi
 import me.wolszon.crowdie.base.Preferences
 import retrofit2.HttpException
@@ -109,7 +111,7 @@ class ApiGroupManager(private val preferences: Preferences,
                 .doOnSuccess { subject.onNext(StateFeed.leave()) }
     }
 
-    override fun updateRole(memberId: String, role: Int): Single<Group> {
+    override fun updateRole(memberId: String, role: Member.Role): Single<Group> {
         if (GroupManager.state?.isAdmin() != true) {
             return Single.error { GroupManager.NoPermissionsException() }
         }
@@ -118,7 +120,9 @@ class ApiGroupManager(private val preferences: Preferences,
             return Single.error { Exception("You cannot suppress yourself!") }
         }
 
-        return groupApi.updateMemberRole(memberId, role)
+        val mappedRole = MemberMapper.ReverseRoleMapper.map(role)
+
+        return groupApi.updateMemberRole(memberId, mappedRole)
                 .map { GroupMapper.map(it) }
                 .process()
     }
