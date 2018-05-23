@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_group.*
 import me.wolszon.crowdie.R
@@ -26,6 +25,7 @@ class GroupActivity : BaseActivity(), GroupView {
     @Inject lateinit var memberClickEventSubject: MemberClickEventSubject
 
     private lateinit var tabs: Map<Tab, Fragment>
+    private var currentTab: Tab = Tab.MAP
 
     enum class Tab {
         MAP, MEMBERS, QR, SETTINGS
@@ -33,6 +33,7 @@ class GroupActivity : BaseActivity(), GroupView {
 
     companion object {
         const val LOCATION_PERMISSION_REQUEST = 1
+        const val BUNDLE_TAB = "tab"
 
         fun createIntent(context: Context): Intent =
                 Intent(context, GroupActivity::class.java)
@@ -43,7 +44,14 @@ class GroupActivity : BaseActivity(), GroupView {
         setContentView(R.layout.activity_group)
 
         setupTabs()
-        setActiveTab(Tab.MAP, saveToStack = true)
+
+        // Set current tab
+        val bundleTab = savedInstanceState?.getInt(BUNDLE_TAB)
+        if (bundleTab != null) {
+            setActiveTab(Tab.values()[bundleTab])
+        } else {
+            setActiveTab(Tab.MAP, saveToStack = true)
+        }
 
         navigation.disableShiftMode()
         navigation.setOnNavigationItemReselectedListener { /* Do nothing on purpose. */ }
@@ -62,7 +70,6 @@ class GroupActivity : BaseActivity(), GroupView {
         }
 
         memberClickEventSubject.subscribe {
-            Log.d("lol", "subscribe lol")
             navigation.selectedItemId = R.id.action_map
             // Changing selected item id is like tapping on it, so it already calls `setActiveTab`.
 
@@ -75,6 +82,11 @@ class GroupActivity : BaseActivity(), GroupView {
         }
 
         presenter.subscribe(this)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        outState?.putInt(BUNDLE_TAB, currentTab.ordinal)
     }
 
     private fun setupTabs() {
@@ -105,6 +117,7 @@ class GroupActivity : BaseActivity(), GroupView {
         }
 
         transaction.commit()
+        currentTab = tabToSet
     }
 
     private fun checkLocationPermissions(): Boolean {
