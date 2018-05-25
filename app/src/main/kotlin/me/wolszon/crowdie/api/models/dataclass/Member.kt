@@ -1,5 +1,6 @@
 package me.wolszon.crowdie.api.models.dataclass
 
+import android.support.annotation.ColorInt
 import com.google.android.gms.maps.model.LatLng
 import me.wolszon.crowdie.api.domain.GroupManager
 import me.wolszon.crowdie.utils.CurrentPositionUtil
@@ -11,7 +12,9 @@ data class Member (
         val name: String,
         val role: Role,
         val lat: Float,
-        val lng: Float
+        val lng: Float,
+        @ColorInt
+        val color: Int
 ) {
     enum class Role {
         MEMBER, ADMIN

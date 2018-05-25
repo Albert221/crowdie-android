@@ -7,7 +7,7 @@ import me.wolszon.crowdie.api.models.dataclass.Member
 import me.wolszon.crowdie.utils.inflate
 import javax.inject.Inject
 
-class MembersListAdapter @Inject constructor(private val memberClickEventSubject: MemberClickEventSubject)
+class MembersListAdapter(private val memberClickEventSubject: MemberClickEventSubject)
         : RecyclerView.Adapter<MembersListViewHolder>() {
     private val members = arrayListOf<Member>()
 

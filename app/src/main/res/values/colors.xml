@@ -4,15 +4,18 @@
     <color name="colorPrimaryDark">@color/primaryDark</color>
     <color name="colorAccent">@color/secondary</color>
 
-    <color name="primary">#43a047</color>
-    <color name="primaryDark">#00701a</color>
+    <color name="primary">#1976d2</color>
+    <color name="primaryLight">#63a4ff</color>
+    <color name="primaryDark">#004ba0</color>
     <color name="textOnPrimary">#ffffff</color>
-    <color name="secondary">#1976d2</color>
-    <color name="secondaryLight">#63a4ff</color>
-    <color name="secondaryDark">#004ba0</color>
+    <color name="secondary">#43a047</color>
+    <color name="secondaryLight">#65b168</color>
+    <color name="secondaryDark">#00701a</color>
     <color name="textOnSecondary">#ffffff</color>
 
     <color name="primaryGradientEnd">#37833b</color>
+    <color name="background">#f1f1f1</color>
+
     <color name="roleSwitch">#ffd54f</color>
     <color name="block">#f44336</color>
 </resources>

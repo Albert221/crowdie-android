@@ -24,4 +24,6 @@
     <string name="no_longer_want_to_be_here">No longer want to be here?</string>
     <string name="leave">Leave</string>
     <string name="kick">Kick</string>
+    <string name="actions">Actions</string>
+    <string name="bullet_separator">•</string>
 </resources>

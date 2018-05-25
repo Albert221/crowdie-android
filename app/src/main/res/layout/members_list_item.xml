@@ -6,17 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
-    android:background="@drawable/admin_indicator"
+    android:background="@drawable/member_list_item_background"
     android:elevation="4dp">
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/marker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:padding="16dp"
         android:adjustViewBounds="false"
         android:background="@drawable/ic_map_marker"
+        android:backgroundTint="@color/primaryDark"
         android:cropToPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,16 +29,45 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView2"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toEndOf="@id/marker"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@tools:sample/full_names"
-        android:layout_marginStart="8dp" />
+        tools:text="@tools:sample/full_names" />
 
     <TextView
-        android:id="@+id/status"
+        android:id="@+id/role"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:textSize="11sp"
+        tools:text="Member"
+        app:layout_constraintTop_toBottomOf="@id/name"
+        app:layout_constraintLeft_toLeftOf="@id/name"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <TextView
+        android:id="@+id/separator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="4sp"
+        android:paddingRight="4sp"
+        android:textSize="11sp"
+        android:text="@string/bullet_separator"
+        app:layout_constraintLeft_toRightOf="@id/role"
+        app:layout_constraintBaseline_toBaselineOf="@id/role" />
+
+    <TextView
+        android:id="@+id/activityDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="11sp"
+        tools:text="Inactive for 4m"
+        app:layout_constraintLeft_toRightOf="@id/separator"
+        app:layout_constraintBaseline_toBaselineOf="@id/separator" />
+
+    <TextView
+        android:id="@+id/distancePill"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-medium"
@@ -47,12 +77,14 @@
         android:textColor="@color/textOnPrimary"
         tools:text="@sample/distance"
         app:layout_goneMarginRight="16dp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/name"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@id/actionsButton" />
 
     <ImageButton
         android:id="@+id/actionsButton"
         style="?android:attr/actionOverflowButtonStyle"
+        android:contentDescription="@string/actions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"

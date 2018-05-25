@@ -1,4 +1,4 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_checked="true" android:color="@color/textOnSecondary" />
-    <item android:color="@color/secondaryLight" />
+    <item android:state_checked="true" android:color="@color/textOnPrimary" />
+    <item android:color="@color/primaryLight" />
 </selector>

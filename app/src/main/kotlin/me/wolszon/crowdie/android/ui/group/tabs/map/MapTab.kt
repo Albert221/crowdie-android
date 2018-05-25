@@ -86,7 +86,7 @@ class MapTab : BaseFragment(), OnMapReadyCallback, MapView {
                 markers[it.id] = map.addMarker(
                         MarkerOptions()
                                 .position(LatLng(0.0, 0.0))
-//                                .icon(bitmapDescriptorFactoryFromVectorResource(R.drawable.face, activity!!))
+                                .icon(bitmapDescriptorFactoryFromVectorResource(R.drawable.ic_map_marker, activity!!, it.color))
                 )
             }
 

@@ -6,6 +6,7 @@ import dagger.Module
 import dagger.Provides
 import me.wolszon.crowdie.BuildConfig
 import me.wolszon.crowdie.android.AndroidPreferences
+import me.wolszon.crowdie.android.ui.group.tabs.members.adapter.MemberClickEventSubject
 import me.wolszon.crowdie.api.okhttp.UserTokenInterceptor
 import me.wolszon.crowdie.base.Preferences
 import me.wolszon.crowdie.base.ApplicationSchedulers

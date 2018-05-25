@@ -1,6 +1,6 @@
 package me.wolszon.crowdie.android.ui.group.tabs.members.adapter
 
-import android.graphics.drawable.ColorDrawable
+import android.content.res.ColorStateList
 import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -24,21 +24,12 @@ class MembersListViewHolder(override val containerView: View,
     fun bindView(member: Member) {
         // FIXME: This method is a mess
         memberId = member.id
-
-        actionsButton.isVisible = GroupManager.state?.isAdmin() ?: false
-
         memberRole = member.role
-        when (member.role) {
-            Member.Role.MEMBER -> {
-                clickableArea.background = ColorDrawable(
-                        containerView.resources.getColor(android.R.color.background_light))
-            }
 
-            Member.Role.ADMIN -> {
-                clickableArea.background = containerView.resources.getDrawable(
-                        R.drawable.admin_indicator)
-            }
-        }
+        actionsButton.isVisible = GroupManager.state?.isAdmin() ?: false && !member.isYou()
+        role.text = memberRole.toString().toLowerCase().capitalize()
+        activityDescription.text = "Active"
+        marker.backgroundTintList = ColorStateList.valueOf(member.color)
 
         if (member.isYou()) {
             showYouPill()
@@ -52,15 +43,15 @@ class MembersListViewHolder(override val containerView: View,
     }
 
     private fun showYouPill() {
-        status.text = containerView.resources.getString(R.string.you)
-        status.setTextColor(containerView.resources.getColor(R.color.textOnSecondary))
-        status.background = containerView.resources.getDrawable(R.drawable.pill_you)
+        distancePill.text = containerView.resources.getString(R.string.you)
+        distancePill.setTextColor(containerView.resources.getColor(R.color.textOnSecondary))
+        distancePill.background = containerView.resources.getDrawable(R.drawable.pill_you)
     }
 
     private fun showDistancePill(distance: Int) {
-        status.text = DistanceFormatter.format(distance).toUpperCase()
-        status.setTextColor(containerView.resources.getColor(R.color.textOnPrimary))
-        status.background = containerView.resources.getDrawable(R.drawable.pill_distance)
+        distancePill.text = DistanceFormatter.format(distance).toUpperCase()
+        distancePill.setTextColor(containerView.resources.getColor(R.color.textOnPrimary))
+        distancePill.background = containerView.resources.getDrawable(R.drawable.pill_distance)
     }
 
     private fun onActionsButtonClick(view: View) {

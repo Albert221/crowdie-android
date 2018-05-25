@@ -4,13 +4,29 @@ import me.wolszon.crowdie.api.models.apimodels.MemberResponse
 import me.wolszon.crowdie.api.models.dataclass.Member
 
 object MemberMapper : Mapper<MemberResponse, Member> {
+    private val colorsCache: MutableMap<String, Int> = hashMapOf()
+
     override fun map(value: MemberResponse): Member = Member(
             id = value.id,
             name = value.name,
             role = RoleMapper.map(value.role),
             lat = value.coordsBit.lat,
-            lng = value.coordsBit.lng
+            lng = value.coordsBit.lng,
+            color = randomColor(value.id)
     )
+
+    private fun randomColor(id: String): Int {
+        val cached = colorsCache[id]
+        if (cached != null) {
+            return cached
+        }
+
+        // Color in AARRGGBB where RRGGBB is random and AA is 255
+        val color = (Math.random() * 0x1000000 + 0xFF000000).toLong()
+        colorsCache[id] = color.toInt()
+
+        return color.toInt()
+    }
 
     object RoleMapper : Mapper<Int, Member.Role> {
         override fun map(value: Int): Member.Role = when (value) {
