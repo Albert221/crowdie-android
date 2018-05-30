@@ -15,11 +15,9 @@ import me.wolszon.crowdie.api.models.mapper.MemberMapper
 import me.wolszon.crowdie.api.retrofit.V1RetrofitApi
 import me.wolszon.crowdie.base.Preferences
 import retrofit2.HttpException
-import retrofit2.Retrofit
 
 class ApiGroupManager(private val preferences: Preferences,
-                      private val retrofit: Retrofit) : GroupManager {
-    private val groupApi by lazy { retrofit.create(V1RetrofitApi::class.java) }
+                      private val groupApi: V1RetrofitApi) : GroupManager {
     private val subject: BehaviorSubject<StateFeed> = BehaviorSubject.create()
 
     init {

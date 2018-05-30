@@ -31,9 +31,7 @@ interface GroupManager {
             var currentMemberId: String
     ) {
         fun getGroupId(): String = group.id
-
         fun getCurrentUser(): Member = group.members.find { it.isYou() }!!
-
         fun isAdmin(): Boolean = getCurrentUser().role == Member.Role.ADMIN
     }
 }
