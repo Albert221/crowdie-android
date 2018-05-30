@@ -3,7 +3,7 @@ package me.wolszon.crowdie.api.domain
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
-import me.wolszon.crowdie.android.CrowdieApplication
+import me.wolszon.crowdie.android.Application
 import me.wolszon.crowdie.api.models.mapper.CreatedMapper
 import me.wolszon.crowdie.api.models.mapper.GroupMapper
 import me.wolszon.crowdie.api.models.apimodels.CreatedResponse
@@ -141,7 +141,7 @@ class ApiGroupManager(private val preferences: Preferences,
             MemberRequest(
                     name = preferences.username,
                     lat = 0f, lng = 0f,
-                    androidId = CrowdieApplication.androidId
+                    androidId = Application.androidId
             )
 
     private fun destroyState() {

@@ -6,9 +6,9 @@ import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
 import me.wolszon.crowdie.di.DaggerAppComponent
 
-class CrowdieApplication : DaggerApplication() {
+class Application : DaggerApplication() {
     companion object {
-        const val APPLICATION_NAME = "Crowdie"
+        const val TAG = "Crowdie"
 
         lateinit var androidId: String
     }
