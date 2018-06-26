@@ -17,6 +17,11 @@ import me.wolszon.crowdie.android.ui.group.GroupActivity
 import me.wolszon.crowdie.base.BaseService
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import android.app.NotificationManager
+import android.app.NotificationChannel
+import android.os.Build
+import android.support.annotation.RequiresApi
+
 
 class CoordsTrackerService : BaseService(), CoordsTrackerView {
     @Inject lateinit var presenter: CoordsTrackerPresenter
@@ -25,7 +30,7 @@ class CoordsTrackerService : BaseService(), CoordsTrackerView {
     private val locationCallback: GoogleLocationCallback by lazy { LocationCallback() }
 
     companion object {
-        const val NOTIFICATION_CHANNEL = "groupie"
+        const val NOTIFICATION_CHANNEL_ID = "groupie"
 
         fun start(context: Context) {
             context.startService(createIntent(context))
@@ -48,7 +53,11 @@ class CoordsTrackerService : BaseService(), CoordsTrackerView {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }, 0)
 
-        notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel()
+        }
+
+        notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(resources.getString(R.string.app_name))
                 .setContentText(resources.getString(R.string.service_notification_text))
                 .setSmallIcon(android.R.drawable.ic_dialog_map)
@@ -68,6 +77,16 @@ class CoordsTrackerService : BaseService(), CoordsTrackerView {
         locationProvider.requestLocationUpdates(locationRequest, locationCallback, null)
 
         startForeground(1, notification)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel() {
+        val name = "Localization"
+        val importance = NotificationManager.IMPORTANCE_LOW
+        val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance)
+
+        val notificationManager = getSystemService(NotificationManager::class.java)
+        notificationManager!!.createNotificationChannel(channel)
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
