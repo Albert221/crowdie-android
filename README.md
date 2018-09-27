@@ -25,7 +25,7 @@ There is an *admin* and just a *member*. Admin can kick others from the room and
 
 ## Technical stuff
 
-Crowdie uses an API exposed by its [server](https://github.com/Albert221/crowdie-server). It is on its way to start using WebSockets for communication. More details in the server's repository README.
+Crowdie uses an API exposed by its [server](https://github.com/Albert221/crowdie-api). It is on its way to start using WebSockets for communication. More details in the server's repository README.
 
 ## Goal of the project
 
